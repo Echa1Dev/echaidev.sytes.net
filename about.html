@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Terminal interactiva estilo CRT retro de EchaiDev - About" />
+  <title>About | EchaiDev</title>
+  <!-- Estilos CSS -->
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="about-styles.css">
+  <!-- Scripts externos -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ua-parser-js/0.7.28/ua-parser.min.js"></script>
+  <link rel="preconnect" href="https://fonts.cdnfonts.com">
+</head>
+<body class="crt">
+  <div class="scanline"></div>
+  <div class="noise"></div>
+  <div class="flicker"></div>
+  <header>
+    <div class="logo">EchaiDev://about</div>
+    <div class="hamburger-menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">/home</a>
+      <a href="about.html" class="nav-link">/about</a>
+      <a href="/projects.html" class="nav-link">/projects</a>
+      <a href="/blog.html" class="nav-link">/blog</a>
+      <a href="/contact.html" class="nav-link">/contact</a>
+    </nav>
+  </header>
+  
+  <!-- Menú móvil -->
+  <div class="mobile-menu">
+    <nav class="nav-links">
+      <a href="/index.html" class="nav-link">/home</a>
+      <a href="/about.html" class="nav-link">/about</a>
+      <a href="/projects.html" class="nav-link">/projects</a>
+      <a href="/blog.html" class="nav-link">/blog</a>
+      <a href="/contact.html" class="nav-link">/contact</a>
+    </nav>
+  </div>
+  
+  <main>
+    <div class="circuit-lines"></div>
+    <div class="character-screen">
+      <h1 class="screen-title">Character Profile</h1>
+      
+      <!-- Sistema de pestañas actualizado -->
+      <div class="tabs-container">
+        <div class="tab-button active" data-tab="character">Character Profile</div>
+        <div class="tab-button" data-tab="skill-tree">Skill Tree</div>
+        <div class="tab-button" data-tab="about-me">About Me</div>
+      </div>
+      
+      <!-- Contenido de la pestaña de personaje -->
+      <div class="tab-content active" id="character-tab-content">
+        <div class="character-container">
+          <div class="character-visual">
+            <div class="character-frame">
+              <div class="scan-line"></div>
+              <div class="character-sprite"></div>
+            </div>
+          </div>
+          
+          <div class="character-info">
+            <div class="character-header">
+              <div class="character-name">EchaiDev</div>
+              <div class="character-class">Game Developer</div>
+              <div class="character-level">Level <span id="player-level">18</span></div>
+            </div>
+            
+            <div class="stats-container">
+              <div class="stat-bar">
+                <div class="stat-label">
+                  <span>HP</span>
+                  <span>85/100</span>
+                </div>
+                <div class="stat-progress">
+                  <div class="stat-fill hp-fill"></div>
+                </div>
+              </div>
+              
+              <div class="stat-bar">
+                <div class="stat-label">
+                  <span>MP</span>
+                  <span>70/100</span>
+                </div>
+                <div class="stat-progress">
+                  <div class="stat-fill mp-fill"></div>
+                </div>
+              </div>
+              
+              <div class="stat-bar">
+                <div class="stat-label">
+                  <span>XP</span>
+                  <span>40/100</span>
+                </div>
+                <div class="stat-progress">
+                  <div class="stat-fill xp-fill"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="skills-container">
+              <div class="skill-item" data-skill="programming">Programming Lv.15</div>
+              <div class="skill-item" data-skill="gamedev">Game Dev Lv.12</div>
+              <div class="skill-item" data-skill="design">UI Design Lv.10</div>
+              <div class="skill-item" data-skill="creativity">Creativity Lv.16</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="menu-container">
+          <div class="menu-buttons">
+            <button class="menu-button" data-modal="skills">View Skills</button>
+            <button class="menu-button" data-modal="inventory">Inventory</button>
+            <button class="menu-button" data-modal="quests">Quests</button>
+            <button class="menu-button" data-modal="achievements">Achievements</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Contenido de la pestaña del árbol de habilidades -->
+      <div class="tab-content" id="skill-tree-tab-content">
+        <div class="skill-tree-container">
+          <div class="skill-tree-background"></div>
+          
+          <div class="skill-tree-grid">
+            <!-- Sección de Programación -->
+            <div class="skill-section" id="programming-section">
+              <div class="section-header">Programming</div>
+              <div class="skill-grid">
+                <div class="skill-node" data-skill="javascript" data-level="90" title="JavaScript & TypeScript">
+                  <div class="skill-icon">
+                    <i class="icon">JS</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">JavaScript</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 90%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="python" data-level="85" title="Python & Data Analysis">
+                  <div class="skill-icon">
+                    <i class="icon">Py</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Python</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 85%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="cpp" data-level="70" title="C++ Game Development">
+                  <div class="skill-icon">
+                    <i class="icon">C++</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">C++</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 70%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="csharp" data-level="80" title="C# & Unity">
+                  <div class="skill-icon">
+                    <i class="icon">C#</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">C#</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 80%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sección de Game Development -->
+            <div class="skill-section" id="gamedev-section">
+              <div class="section-header">Game Development</div>
+              <div class="skill-grid">
+                <div class="skill-node" data-skill="unity" data-level="85" title="Unity 3D Engine">
+                  <div class="skill-icon">
+                    <i class="icon">Un</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Unity</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 85%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="unreal" data-level="70" title="Unreal Engine">
+                  <div class="skill-icon">
+                    <i class="icon">UE</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Unreal</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 70%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="gamedesign" data-level="90" title="Game Design & Mechanics">
+                  <div class="skill-icon">
+                    <i class="icon">GD</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Game Design</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 90%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="3dmodeling" data-level="65" title="3D Modeling & Animation">
+                  <div class="skill-icon">
+                    <i class="icon">3D</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">3D Modeling</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 65%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sección de Creative Skills -->
+            <div class="skill-section" id="creative-section">
+              <div class="section-header">Creative Skills</div>
+              <div class="skill-grid">
+                <div class="skill-node" data-skill="pixelart" data-level="80" title="Pixel Art & Game Assets">
+                  <div class="skill-icon">
+                    <i class="icon">PA</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Pixel Art</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 80%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="ui" data-level="85" title="UI/UX Design">
+                  <div class="skill-icon">
+                    <i class="icon">UI</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">UI Design</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 85%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="music" data-level="60" title="Music & Sound Design">
+                  <div class="skill-icon">
+                    <i class="icon">♪</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Audio</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 60%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="writing" data-level="75" title="Game Writing & Narrative">
+                  <div class="skill-icon">
+                    <i class="icon">✎</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Narrative</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 75%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Sección de Professional Skills -->
+            <div class="skill-section" id="professional-section">
+              <div class="section-header">Professional</div>
+              <div class="skill-grid">
+                <div class="skill-node" data-skill="project" data-level="85" title="Project Management">
+                  <div class="skill-icon">
+                    <i class="icon">PM</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Project Mgmt</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 85%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="agile" data-level="80" title="Agile & Scrum">
+                  <div class="skill-icon">
+                    <i class="icon">Ag</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Agile</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 80%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="git" data-level="90" title="Git & Version Control">
+                  <div class="skill-icon">
+                    <i class="icon">Git</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Git</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 90%"></div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="skill-node" data-skill="communication" data-level="95" title="Communication & Teamwork">
+                  <div class="skill-icon">
+                    <i class="icon">Com</i>
+                  </div>
+                  <div class="skill-info">
+                    <div class="skill-name">Communication</div>
+                    <div class="skill-level-bar">
+                      <div class="skill-level-fill" style="width: 95%"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- NUEVA PESTAÑA: About Me - Ventana Estilo App de SO -->
+      <div class="tab-content" id="about-me-tab-content">
+        <div class="os-window-container">
+          <div class="os-window">
+            <div class="os-window-header">
+              <div class="os-window-title">
+                <div class="os-window-icon">👤</div>
+                <span>AboutMe.exe</span>
+              </div>
+              <div class="os-window-controls">
+                <button class="window-control minimize">_</button>
+                <button class="window-control maximize">□</button>
+                <button class="window-control close">×</button>
+              </div>
+            </div>
+            
+            <div class="os-window-body">
+              <div class="os-window-sidebar">
+                <div class="sidebar-item active" data-section="profile">
+                  <div class="sidebar-icon">👤</div>
+                  <span>Profile</span>
+                </div>
+                <div class="sidebar-item" data-section="history">
+                  <div class="sidebar-icon">📜</div>
+                  <span>History</span>
+                </div>
+                <div class="sidebar-item" data-section="interests">
+                  <div class="sidebar-icon">✨</div>
+                  <span>Interests</span>
+                </div>
+              </div>
+              
+              <div class="os-window-content">
+                <div class="window-section active" id="profile-section">
+                  <div class="section-title">
+                    <div class="title-icon">👤</div>
+                    <h2>Developer Profile</h2>
+                  </div>
+                  
+                  <div class="info-card">
+                    <div class="info-header">Basic Information</div>
+                    <div class="info-content">
+                      <div class="info-row">
+                        <div class="info-label">Name:</div>
+                        <div class="info-value">Echai Dev</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">Role:</div>
+                        <div class="info-value">Game Developer & UI Designer</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">Location:</div>
+                        <div class="info-value">Pamplona, Spain</div>
+                      </div>
+                      <div class="info-row">
+                        <div class="info-label">Experience:</div>
+                        <div class="info-value">4+ years in game development</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="text-display">
+                    <p>Hello, World! I'm <span class="highlight">Echai</span>, a passionate game developer and designer with a love for creating immersive digital experiences.</p>
+                    <p>My journey in development started with a fascination for how games work behind the scenes. That curiosity led me to learn programming, design, and everything in between.</p>
+                    <p>I specialize in creating games and interactive experiences that blend engaging gameplay with compelling narratives. My approach combines technical skills with creative vision to build unique digital worlds.</p>
+                  </div>
+                  
+                  <div class="skill-tags">
+                    <div class="tag">Game Dev</div>
+                    <div class="tag">UI/UX</div>
+                    <div class="tag">C#</div>
+                    <div class="tag">Unity</div>
+                    <div class="tag">JavaScript</div>
+                    <div class="tag">Python</div>
+                    <div class="tag">Pixel Art</div>
+                  </div>
+                </div>
+                
+                <div class="window-section" id="history-section">
+                  <div class="section-title">
+                    <div class="title-icon">📜</div>
+                    <h2>Development History</h2>
+                  </div>
+                  
+                  <div class="timeline">
+                    <div class="timeline-item">
+                      <div class="timeline-date">2021 - Present</div>
+                      <div class="timeline-content">
+                        <h3>Indie Game Developer</h3>
+                        <p>Working on personal projects and collaborating with small teams to create innovative indie games.</p>
+                        <div class="timeline-tags">
+                          <span class="tag">Unity</span>
+                          <span class="tag">C#</span>
+                          <span class="tag">Pixel Art</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                      <div class="timeline-date">2020 - 2021</div>
+                      <div class="timeline-content">
+                        <h3>UI/UX Designer</h3>
+                        <p>Designed interfaces for mobile applications and games, focusing on user experience and accessibility.</p>
+                        <div class="timeline-tags">
+                          <span class="tag">Figma</span>
+                          <span class="tag">UI Design</span>
+                          <span class="tag">Prototyping</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="timeline-item">
+                      <div class="timeline-date">2018 - 2020</div>
+                      <div class="timeline-content">
+                        <h3>Computer Science Student</h3>
+                        <p>Studied programming fundamentals, algorithms, and game development theory while working on personal projects.</p>
+                        <div class="timeline-tags">
+                          <span class="tag">Java</span>
+                          <span class="tag">Python</span>
+                          <span class="tag">Game Theory</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="window-section" id="interests-section">
+                  <div class="section-title">
+                    <div class="title-icon">✨</div>
+                    <h2>Interests & Hobbies</h2>
+                  </div>
+                  
+                  <div class="interests-grid">
+                    <div class="interest-card">
+                      <div class="interest-icon">🎮</div>
+                      <div class="interest-title">Gaming</div>
+                      <p>From retro classics to indie gems, games are both my profession and passion.</p>
+                    </div>
+                    
+                    <div class="interest-card">
+                      <div class="interest-icon">🎨</div>
+                      <div class="interest-title">Pixel Art</div>
+                      <p>Creating pixel-perfect sprites and environments for games and personal projects.</p>
+                    </div>
+                    
+                    <div class="interest-card">
+                      <div class="interest-icon">🎵</div>
+                      <div class="interest-title">Chiptune Music</div>
+                      <p>Composing and listening to 8-bit and 16-bit style music with modern touches.</p>
+                    </div>
+                    
+                    <div class="interest-card">
+                      <div class="interest-icon">📚</div>
+                      <div class="interest-title">Sci-Fi Literature</div>
+                      <p>Reading about speculative futures inspires my creative works and game narratives.</p>
+                    </div>
+                    
+                    <div class="interest-card">
+                      <div class="interest-icon">🧠</div>
+                      <div class="interest-title">Game Jams</div>
+                      <p>Participating in rapid development challenges to create games within tight deadlines.</p>
+                    </div>
+                    
+                    <div class="interest-card">
+                      <div class="interest-icon">📺</div>
+                      <div class="interest-title">Retro Computing</div>
+                      <p>Exploring vintage operating systems and preserving computing history.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="os-window-statusbar">
+              <div class="status-indicator online">● ONLINE</div>
+              <div class="status-memory">MEM: 248MB/512MB</div>
+              <div class="status-version">v1.0.2</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Nuevo: overlay de carga para el efecto terminal -->
+        <div class="window-loading-overlay">
+          <div class="window-loading-spinner"></div>
+          <div class="window-loading-text">Cargando sistema</div>
+          <div class="loading-terminal">
+            <div class="terminal-line">INICIANDO bio.exe</div>
+            <div class="terminal-line">VERIFICANDO MEMORIA...</div>
+            <div class="terminal-line">CARGANDO COMPONENTES UI...</div>
+            <div class="terminal-line">INICIALIZACIÓN COMPLETADA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  
+  <!-- Modales -->
+  <div class="modal" id="skillsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Skills & Abilities</div>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="skills-container">
+          <div class="skill-item">Programming Lv.15</div>
+          <div class="skill-item">Game Dev Lv.12</div>
+          <div class="skill-item">UI Design Lv.10</div>
+          <div class="skill-item">Creativity Lv.16</div>
+          <div class="skill-item">Problem Solving Lv.14</div>
+          <div class="skill-item">Pixel Art Lv.8</div>
+          <div class="skill-item">Music Production Lv.6</div>
+          <div class="skill-item">Storytelling Lv.11</div>
+          <div class="skill-item">Web Development Lv.13</div>
+          <div class="skill-item">3D Modeling Lv.7</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="inventoryModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Inventory</div>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="skills-container">
+          <div class="skill-item">Gaming PC (Legendary)</div>
+          <div class="skill-item">Mechanical Keyboard (Rare)</div>
+          <div class="skill-item">Graphics Tablet (Uncommon)</div>
+          <div class="skill-item">Game Engine License (Epic)</div>
+          <div class="skill-item">Code Editor (Rare)</div>
+          <div class="skill-item">Headphones (Uncommon)</div>
+          <div class="skill-item">Energy Drink (Common)</div>
+          <div class="skill-item">Pixel Art Guide (Uncommon)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="questsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Active Quests</div>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="skills-container">
+          <div class="skill-item">Complete Game Jam (In Progress)</div>
+          <div class="skill-item">Learn New Programming Language (In Progress)</div>
+          <div class="skill-item">Publish First Game (Not Started)</div>
+          <div class="skill-item">Collaborate on Open Source Project (Not Started)</div>
+          <div class="skill-item">Improve Portfolio Website (In Progress)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="modal" id="achievementsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-title">Achievements</div>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="skills-container">
+          <div class="skill-item">First Line of Code (Unlocked)</div>
+          <div class="skill-item">Hello World Master (Unlocked)</div>
+          <div class="skill-item">Bug Hunter (Unlocked)</div>
+          <div class="skill-item">Pixel Perfect (In Progress)</div>
+          <div class="skill-item">Game Jam Survivor (Unlocked)</div>
+          <div class="skill-item">Git Wizard (In Progress)</div>
+          <div class="skill-item">Stack Overflow Contributor (Locked)</div>
+          <div class="skill-item">Indie Developer (In Progress)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <div class="footer-inner">
+      <p>© 2025 echaidev | Terminal</p>
+      <div class="social-links">
+        <a href="https://github.com/echaidev" class="social-link" title="GitHub">GH</a>
+        <a href="https://twitter.com/echaidev" class="social-link" title="Twitter">TW</a>
+        <a href="mailto:contacto@echaidev.com" class="social-link" title="Email">@</a>
+      </div>
+    </div>
+  </footer>
+  
+  <!-- JavaScript -->
+  <script src="transition.js"></script>
+  <script src="main.js"></script>
+  <script src="about.js"></script>
+</body>
+</html>

@@ -1,0 +1,1523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árbol de Habilidades RPG</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #0dff92;
+            --primary-glow: rgba(13, 255, 146, 0.7);
+            --secondary-color: #3a86ff;
+            --secondary-glow: rgba(58, 134, 255, 0.7);
+            --third-color: #ff4d6d;
+            --third-glow: rgba(255, 77, 109, 0.7);
+            --fourth-color: #ffbe0b;
+            --fourth-glow: rgba(255, 190, 11, 0.7);
+            --bg-color: #0a0e17;
+            --node-size: 160px;
+            --node-inner-size: 134px;
+            --connection-thickness: 6px;
+            --connection-base-color: rgba(53, 71, 121, 0.5);
+            --bg-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23112240' fill-opacity='0.2'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            
+            /* NUEVAS VARIABLES DE DISTRIBUCIÓN ESPACIAL */
+            --primary-orbit-radius: 350px;  /* Aumentado para mayor espaciado */
+            --secondary-orbit-radius: 280px; /* Órbita de subnodos */
+            --orbit-angle-variance: 50deg;   /* Varianza de ángulo entre nodos */
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            background-image: var(--bg-pattern);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        .container {
+            position: relative;
+            width: 100%;
+            max-width: 1800px;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .skill-tree {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
+        }
+        
+        /* Hexágono base para nodos */
+        .node {
+            position: absolute;
+            width: var(--node-size);
+            height: var(--node-size);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                        top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                        left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .node-outer {
+            position: absolute;
+            width: var(--node-size);
+            height: var(--node-size);
+            background-color: rgba(15, 23, 42, 0.7);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        
+        .node-inner {
+            width: var(--node-inner-size);
+            height: var(--node-inner-size);
+            background-color: rgba(22, 33, 62, 0.9);
+            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            z-index: 11;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        /* Nueva estructura de contenido */
+        .node-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 20px;
+            height: 75%;
+            width: 100%;
+        }
+        
+        .node-level-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 25%;
+            padding-bottom: 10px;
+        }
+        
+        .node-level {
+            font-size: 10px;
+            opacity: 0.8;
+            font-weight: 700;
+            position: relative;
+            padding: 2px 8px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        /* Estado oculto para nodos */
+        .node:not(.root) {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                       top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), 
+                       left 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        /* Estados visibles cuando el árbol está expandido */
+        .tree-expanded .node {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Estilos de borde por tipo de nodo */
+        .root .node-outer {
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+        
+        .branch-left .node-outer {
+            border: 3px solid var(--secondary-color);
+            box-shadow: 0 0 12px var(--secondary-glow);
+        }
+        
+        .left-sub-1 .node-outer,
+        .left-sub-2 .node-outer,
+        .left-sub-3 .node-outer {
+            border: 3px solid var(--secondary-color);
+            box-shadow: 0 0 8px var(--secondary-glow);
+        }
+        
+        .branch-right .node-outer {
+            border: 3px solid var(--third-color);
+            box-shadow: 0 0 12px var(--third-glow);
+        }
+        
+        .right-sub-1 .node-outer,
+        .right-sub-2 .node-outer,
+        .right-sub-3 .node-outer,
+        .right-sub-4 .node-outer {
+            border: 3px solid var(--third-color);
+            box-shadow: 0 0 8px var(--third-glow);
+        }
+        
+        .branch-bottom .node-outer {
+            border: 3px solid var(--fourth-color);
+            box-shadow: 0 0 12px var(--fourth-glow);
+        }
+        
+        .bottom-sub-1 .node-outer,
+        .bottom-sub-2 .node-outer,
+        .bottom-sub-3 .node-outer,
+        .bottom-sub-4 .node-outer {
+            border: 3px solid var(--fourth-color);
+            box-shadow: 0 0 8px var(--fourth-glow);
+        }
+        
+        /* Hover effects */
+        .node:hover .node-outer {
+            transform: scale(1.05);
+        }
+        
+        .node:hover .node-inner {
+            transform: scale(1.1);
+        }
+        
+        .root:hover .node-outer {
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+        
+        .branch-left:hover .node-outer,
+        .left-sub-1:hover .node-outer,
+        .left-sub-2:hover .node-outer,
+        .left-sub-3:hover .node-outer {
+            box-shadow: 0 0 20px var(--secondary-glow);
+        }
+        
+        .branch-right:hover .node-outer,
+        .right-sub-1:hover .node-outer,
+        .right-sub-2:hover .node-outer,
+        .right-sub-3:hover .node-outer,
+        .right-sub-4:hover .node-outer {
+            box-shadow: 0 0 20px var(--third-glow);
+        }
+        
+        .branch-bottom:hover .node-outer,
+        .bottom-sub-1:hover .node-outer,
+        .bottom-sub-2:hover .node-outer,
+        .bottom-sub-3:hover .node-outer,
+        .bottom-sub-4:hover .node-outer {
+            box-shadow: 0 0 20px var(--fourth-glow);
+        }
+        
+        /* Estilo activo para nodos */
+        .node.active .node-outer {
+            box-shadow: 0 0 20px currentColor;
+        }
+        
+        .node.active .node-inner {
+            background-color: rgba(30, 45, 80, 0.95);
+        }
+        
+        .node-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 3px currentColor);
+        }
+        
+        .node-title {
+            font-size: 13px; 
+            font-weight: 600;
+            max-width: 90%;
+            word-wrap: break-word;
+            line-height: 1.2;
+            opacity: 0.9;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            letter-spacing: 0.5px;
+        }
+        
+        /* Nodo raíz con estilo especial */
+        .root {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 15;
+            opacity: 1;
+        }
+        
+        .root .node-inner {
+            background-color: rgba(30, 45, 80, 0.95);
+        }
+        
+        .root .node-icon {
+            font-size: 36px;
+        }
+        
+        /* NUEVA DISTRIBUCIÓN ESPACIAL - SISTEMA TRIANGULAR AMPLIADO */
+        /* Ramas principales en distribución triangular equilátera con mayor separación */
+        .branch-left {
+            top: calc(50% - var(--primary-orbit-radius) * 0.5);
+            left: calc(50% - var(--primary-orbit-radius) * 0.866); /* cos(30°) = 0.866 */
+            transform: translate(-50%, -50%);
+        }
+        
+        .branch-right {
+            top: calc(50% - var(--primary-orbit-radius) * 0.5);
+            left: calc(50% + var(--primary-orbit-radius) * 0.866); /* cos(30°) = 0.866 */
+            transform: translate(-50%, -50%);
+        }
+        
+        .branch-bottom {
+            top: calc(50% + var(--primary-orbit-radius));
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* SUBNODOS EN DISTRIBUCIÓN ORBITAL ESPACIADA */
+        /* Rama izquierda: Programación - Distribución en abanico */
+        .left-sub-1 {
+            top: calc(50% - var(--primary-orbit-radius) * 0.5 - var(--secondary-orbit-radius) * 0.866);
+            left: calc(50% - var(--primary-orbit-radius) * 0.866 - var(--secondary-orbit-radius) * 0.5);
+            transform: translate(-50%, -50%);
+        }
+        
+        .left-sub-2 {
+            top: calc(50% - var(--primary-orbit-radius) * 0.5);
+            left: calc(50% - var(--primary-orbit-radius) * 0.866 - var(--secondary-orbit-radius));
+            transform: translate(-50%, -50%);
+        }
+        
+        .left-sub-3 {
+            top: calc(50% - var(--primary-orbit-radius) * 0.5 + var(--secondary-orbit-radius) * 0.866);
+            left: calc(50% - var(--primary-orbit-radius) * 0.866 - var(--secondary-orbit-radius) * 0.5);
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Rama derecha: Game Dev - Distribución en abanico */
+        .right-sub-1 {
+            top: calc(50% - var(--primary-orbit-radius) * 0.5 - var(--secondary-orbit-radius) * 0.866);
+            left: calc(50% + var(--primary-orbit-radius) * 0.866 + var(--secondary-orbit-radius) * 0.5);
+            transform: translate(-50%, -50%);
+        }
+        
+        .right-sub-2 {
+            top: calc(50% - var(--primary-orbit-radius) * 0.5);
+            left: calc(50% + var(--primary-orbit-radius) * 0.866 + var(--secondary-orbit-radius));
+            transform: translate(-50%, -50%);
+        }
+        
+        .right-sub-3 {
+            top: calc(50% - var(--primary-orbit-radius) * 0.5 + var(--secondary-orbit-radius) * 0.866);
+            left: calc(50% + var(--primary-orbit-radius) * 0.866 + var(--secondary-orbit-radius) * 0.5);
+            transform: translate(-50%, -50%);
+        }
+        
+        .right-sub-4 {
+            top: calc(50% - var(--primary-orbit-radius) * 0.5 - var(--secondary-orbit-radius) * 0.5);
+            left: calc(50% + var(--primary-orbit-radius) * 0.866 + var(--secondary-orbit-radius) * 0.866);
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Rama inferior: Tools - Distribución en abanico */
+        .bottom-sub-1 {
+            top: calc(50% + var(--primary-orbit-radius) + var(--secondary-orbit-radius) * 0.5);
+            left: calc(50% - var(--secondary-orbit-radius) * 0.866);
+            transform: translate(-50%, -50%);
+        }
+        
+        .bottom-sub-2 {
+            top: calc(50% + var(--primary-orbit-radius) + var(--secondary-orbit-radius));
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .bottom-sub-3 {
+            top: calc(50% + var(--primary-orbit-radius) + var(--secondary-orbit-radius) * 0.5);
+            left: calc(50% + var(--secondary-orbit-radius) * 0.866);
+            transform: translate(-50%, -50%);
+        }
+        
+        .bottom-sub-4 {
+            top: calc(50% + var(--primary-orbit-radius));
+            left: calc(50% + var(--secondary-orbit-radius));
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Estilo base para conexiones - efecto energía */
+        .connection {
+            position: absolute;
+            background-color: var(--connection-base-color);
+            transform-origin: 0 0;
+            pointer-events: none;
+            z-index: 5;
+            height: var(--connection-thickness);
+            border-radius: var(--connection-thickness);
+            box-shadow: 0 0 8px rgba(120, 151, 255, 0.4);
+            transition: opacity 0.4s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            opacity: 0;
+            overflow: hidden;
+        }
+        
+        /* Efecto de energía fluyendo */
+        .connection::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 50%, transparent 100%);
+            transform: translateX(-100%);
+            animation: energy-flow 3s infinite;
+        }
+        
+        @keyframes energy-flow {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Conexiones visibles cuando el árbol está expandido */
+        .tree-expanded .connection {
+            opacity: 1;
+        }
+        
+        /* Estilos para conexiones activadas por hover */
+        .connection.hover-active[data-from="root"][data-to="programming"] {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 0 15px var(--secondary-glow);
+            height: calc(var(--connection-thickness) + 2px);
+        }
+        
+        .connection.hover-active[data-from="root"][data-to="gamedev"] {
+            background: linear-gradient(to right, var(--primary-color), var(--third-color));
+            box-shadow: 0 0 15px var(--third-glow);
+            height: calc(var(--connection-thickness) + 2px);
+        }
+        
+        .connection.hover-active[data-from="root"][data-to="tools"] {
+            background: linear-gradient(to right, var(--primary-color), var(--fourth-color));
+            box-shadow: 0 0 15px var(--fourth-glow);
+            height: calc(var(--connection-thickness) + 2px);
+        }
+        
+        .connection.hover-active[data-from="programming"] {
+            background: linear-gradient(to right, var(--secondary-color), var(--secondary-color));
+            box-shadow: 0 0 15px var(--secondary-glow);
+            height: calc(var(--connection-thickness) + 2px);
+        }
+        
+        .connection.hover-active[data-from="gamedev"] {
+            background: linear-gradient(to right, var(--third-color), var(--third-color));
+            box-shadow: 0 0 15px var(--third-glow);
+            height: calc(var(--connection-thickness) + 2px);
+        }
+        
+        .connection.hover-active[data-from="tools"] {
+            background: linear-gradient(to right, var(--fourth-color), var(--fourth-color));
+            box-shadow: 0 0 15px var(--fourth-glow);
+            height: calc(var(--connection-thickness) + 2px);
+        }
+        
+        /* Destacado de conexiones activas con colores propios */
+        .connection.active-path {
+            background-color: var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-glow);
+            height: calc(var(--connection-thickness) + 2px);
+            animation: pulse-path 2s infinite;
+        }
+        
+        .connection.active-path[data-from="root"][data-to="programming"],
+        .connection.active-path[data-from="programming"] {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 0 15px var(--secondary-glow);
+            animation: pulse-path-blue 2s infinite;
+        }
+        
+        .connection.active-path[data-from="root"][data-to="gamedev"],
+        .connection.active-path[data-from="gamedev"] {
+            background: linear-gradient(to right, var(--primary-color), var(--third-color));
+            box-shadow: 0 0 15px var(--third-glow);
+            animation: pulse-path-pink 2s infinite;
+        }
+        
+        .connection.active-path[data-from="root"][data-to="tools"],
+        .connection.active-path[data-from="tools"] {
+            background: linear-gradient(to right, var(--primary-color), var(--fourth-color));
+            box-shadow: 0 0 15px var(--fourth-glow);
+            animation: pulse-path-yellow 2s infinite;
+        }
+        
+        /* Animaciones de pulso mejoradas */
+        @keyframes pulse-path-blue {
+            0% { opacity: 0.7; box-shadow: 0 0 8px var(--secondary-glow); }
+            50% { opacity: 1; box-shadow: 0 0 20px var(--secondary-glow); }
+            100% { opacity: 0.7; box-shadow: 0 0 8px var(--secondary-glow); }
+        }
+        
+        @keyframes pulse-path-pink {
+            0% { opacity: 0.7; box-shadow: 0 0 8px var(--third-glow); }
+            50% { opacity: 1; box-shadow: 0 0 20px var(--third-glow); }
+            100% { opacity: 0.7; box-shadow: 0 0 8px var(--third-glow); }
+        }
+        
+        @keyframes pulse-path-yellow {
+            0% { opacity: 0.7; box-shadow: 0 0 8px var(--fourth-glow); }
+            50% { opacity: 1; box-shadow: 0 0 20px var(--fourth-glow); }
+            100% { opacity: 0.7; box-shadow: 0 0 8px var(--fourth-glow); }
+        }
+        
+        /* Interfaz tipo RPG */
+        .ui-frame {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 20px;
+            background-color: rgba(16, 24, 39, 0.8);
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--primary-glow);
+            border-radius: 5px;
+            z-index: 20;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 600;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        
+        .tree-expanded .ui-frame {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .ui-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-glow);
+        }
+        
+        .ui-description {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        
+        /* SISTEMA RESPONSIVE MEJORADO CON GEOMETRÍA ADAPTATIVA */
+        /* Pantallas grandes y ultrawide */
+        @media (min-width: 1921px) {
+            :root {
+                --primary-orbit-radius: 420px;
+                --secondary-orbit-radius: 320px;
+                --node-size: 180px;
+                --node-inner-size: 150px;
+            }
+            
+            .node-icon {
+                font-size: 32px;
+            }
+            
+            .node-title {
+                font-size: 14px;
+            }
+            
+            .node-level {
+                font-size: 12px;
+            }
+        }
+        
+        /* Pantallas de escritorio estándar */
+        @media (max-width: 1920px) {
+            :root {
+                --primary-orbit-radius: 350px;
+                --secondary-orbit-radius: 280px;
+                --node-size: 160px;
+                --node-inner-size: 134px;
+            }
+        }
+        
+        /* Pantallas de laptop grandes */
+        @media (max-width: 1600px) {
+            :root {
+                --primary-orbit-radius: 300px;
+                --secondary-orbit-radius: 240px;
+                --node-size: 140px;
+                --node-inner-size: 116px;
+            }
+            
+            .node-icon {
+                font-size: 26px;
+            }
+            
+            .node-title {
+                font-size: 12px;
+            }
+        }
+        
+        /* Laptops y tablets grandes */
+        @media (max-width: 1366px) {
+            :root {
+                --primary-orbit-radius: 260px;
+                --secondary-orbit-radius: 200px;
+                --node-size: 130px;
+                --node-inner-size: 106px;
+            }
+            
+            .node-icon {
+                font-size: 24px;
+            }
+            
+            .node-title {
+                font-size: 11px;
+            }
+        }
+        
+        /* Tablets y pantallas medianas */
+        @media (max-width: 1024px) {
+            :root {
+                --primary-orbit-radius: 220px;
+                --secondary-orbit-radius: 180px;
+                --node-size: 110px;
+                --node-inner-size: 90px;
+            }
+            
+            .node-icon {
+                font-size: 22px;
+                margin-bottom: 8px;
+            }
+            
+            .node-title {
+                font-size: 10px;
+            }
+            
+            .node-level {
+                font-size: 9px;
+            }
+            
+            /* Ajustar tamaño de UI */
+            .ui-frame {
+                padding: 15px;
+            }
+            
+            .ui-title {
+                font-size: 16px;
+            }
+            
+            .ui-description {
+                font-size: 14px;
+            }
+        }
+        
+        /* Tablets pequeñas y móviles grandes */
+        @media (max-width: 800px) {
+            :root {
+                --primary-orbit-radius: 180px;
+                --secondary-orbit-radius: 150px;
+                --node-size: 90px;
+                --node-inner-size: 74px;
+            }
+            
+            .node-icon {
+                font-size: 20px;
+                margin-bottom: 6px;
+            }
+            
+            .node-title {
+                font-size: 9px;
+            }
+            
+            /* NUEVA GEOMETRÍA PARA TABLETS - DISTRIBUCIÓN TRIANGULAR COMPACTA */
+            /* Ramas principales - Acercamos al centro */
+            .branch-left {
+                top: calc(50% - var(--primary-orbit-radius) * 0.4);
+                left: calc(50% - var(--primary-orbit-radius) * 0.7);
+            }
+            
+            .branch-right {
+                top: calc(50% - var(--primary-orbit-radius) * 0.4);
+                left: calc(50% + var(--primary-orbit-radius) * 0.7);
+            }
+            
+            .branch-bottom {
+                top: calc(50% + var(--primary-orbit-radius) * 0.8);
+                left: 50%;
+            }
+            
+            /* Subnodos en patrón más compacto pero manteniendo distancia */
+            /* Rama izquierda */
+            .left-sub-1 {
+                top: calc(50% - var(--primary-orbit-radius) * 0.8);
+                left: calc(50% - var(--primary-orbit-radius) * 0.6);
+            }
+            
+            .left-sub-2 {
+                top: calc(50% - var(--primary-orbit-radius) * 0.1);
+                left: calc(50% - var(--primary-orbit-radius) * 1.2);
+            }
+            
+            .left-sub-3 {
+                top: calc(50% + var(--primary-orbit-radius) * 0.2);
+                left: calc(50% - var(--primary-orbit-radius) * 0.8);
+            }
+            
+            /* Rama derecha */
+            .right-sub-1 {
+                top: calc(50% - var(--primary-orbit-radius) * 0.8);
+                left: calc(50% + var(--primary-orbit-radius) * 0.6);
+            }
+            
+            .right-sub-2 {
+                top: calc(50% - var(--primary-orbit-radius) * 0.1);
+                left: calc(50% + var(--primary-orbit-radius) * 1.2);
+            }
+            
+            .right-sub-3 {
+                top: calc(50% + var(--primary-orbit-radius) * 0.2);
+                left: calc(50% + var(--primary-orbit-radius) * 0.8);
+            }
+            
+            .right-sub-4 {
+                top: calc(50% - var(--primary-orbit-radius) * 0.5);
+                left: calc(50% + var(--primary-orbit-radius) * 1.0);
+            }
+            
+            /* Rama inferior */
+            .bottom-sub-1 {
+                top: calc(50% + var(--primary-orbit-radius) * 1.2);
+                left: calc(50% - var(--primary-orbit-radius) * 0.5);
+            }
+            
+            .bottom-sub-2 {
+                top: calc(50% + var(--primary-orbit-radius) * 1.4);
+                left: 50%;
+            }
+            
+            .bottom-sub-3 {
+                top: calc(50% + var(--primary-orbit-radius) * 1.2);
+                left: calc(50% + var(--primary-orbit-radius) * 0.5);
+            }
+            
+            .bottom-sub-4 {
+                top: calc(50% + var(--primary-orbit-radius) * 0.8);
+                left: calc(50% + var(--primary-orbit-radius) * 0.7);
+            }
+        }
+        
+        /* Móviles medianos - Reorganización vertical */
+        @media (max-width: 600px) {
+            :root {
+                --primary-orbit-radius: 150px;
+                --secondary-orbit-radius: 120px;
+                --node-size: 80px;
+                --node-inner-size: 65px;
+                --connection-thickness: 4px;
+            }
+            
+            .node-icon {
+                font-size: 18px;
+                margin-bottom: 4px;
+            }
+            
+            .node-title {
+                font-size: 8px;
+                max-width: 95%;
+            }
+            
+            .node-level {
+                font-size: 8px;
+                padding: 1px 6px;
+            }
+            
+            /* Ajuste de UI */
+            .ui-frame {
+                padding: 12px;
+                top: 10px;
+                left: 10px;
+            }
+            
+            .ui-title {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+            
+            .ui-description {
+                font-size: 12px;
+            }
+            
+            /* Ajustar transiciones */
+            .node {
+                transition: transform 0.25s ease, top 0.4s ease, left 0.4s ease, opacity 0.3s ease;
+            }
+            
+            /* DISTRIBUCIÓN VERTICAL PARA MÓVILES - EVITA AMONTONAMIENTO */
+            /* Ramas principales en línea vertical y horizontal */
+            .branch-left {
+                top: calc(50% - var(--primary-orbit-radius) * 0.8);
+                left: 50%;
+            }
+            
+            .branch-right {
+                top: 50%;
+                left: calc(50% + var(--primary-orbit-radius) * 0.8);
+            }
+            
+            .branch-bottom {
+                top: calc(50% + var(--primary-orbit-radius) * 0.8);
+                left: 50%;
+            }
+            
+            /* Sub-nodos en disposición de lista */
+            /* Rama superior (antes izquierda) */
+            .left-sub-1 {
+                top: calc(50% - var(--primary-orbit-radius) * 1.4);
+                left: calc(50% - var(--secondary-orbit-radius) * 0.4);
+            }
+            
+            .left-sub-2 {
+                top: calc(50% - var(--primary-orbit-radius) * 1.4);
+                left: calc(50% + var(--secondary-orbit-radius) * 0.4);
+            }
+            
+            .left-sub-3 {
+                top: calc(50% - var(--primary-orbit-radius) * 1.1);
+                left: calc(50% - var(--secondary-orbit-radius) * 0.7);
+            }
+            
+            /* Rama derecha */
+            .right-sub-1 {
+                top: calc(50% - var(--secondary-orbit-radius) * 0.4);
+                left: calc(50% + var(--primary-orbit-radius) * 1.4);
+            }
+            
+            .right-sub-2 {
+                top: calc(50% + var(--secondary-orbit-radius) * 0.4);
+                left: calc(50% + var(--primary-orbit-radius) * 1.4);
+            }
+            
+            .right-sub-3 {
+                top: calc(50% - var(--secondary-orbit-radius) * 0.7);
+                left: calc(50% + var(--primary-orbit-radius) * 1.1);
+            }
+            
+            .right-sub-4 {
+                top: calc(50% + var(--secondary-orbit-radius) * 0.7);
+                left: calc(50% + var(--primary-orbit-radius) * 1.1);
+            }
+            
+            /* Rama inferior */
+            .bottom-sub-1 {
+                top: calc(50% + var(--primary-orbit-radius) * 1.4);
+                left: calc(50% - var(--secondary-orbit-radius) * 0.4);
+            }
+            
+            .bottom-sub-2 {
+                top: calc(50% + var(--primary-orbit-radius) * 1.4);
+                left: calc(50% + var(--secondary-orbit-radius) * 0.4);
+            }
+            
+            .bottom-sub-3 {
+                top: calc(50% + var(--primary-orbit-radius) * 1.1);
+                left: calc(50% - var(--secondary-orbit-radius) * 0.7);
+            }
+            
+            .bottom-sub-4 {
+                top: calc(50% + var(--primary-orbit-radius) * 1.1);
+                left: calc(50% + var(--secondary-orbit-radius) * 0.7);
+            }
+        }
+        
+        /* Móviles pequeños - Distribución lineal */
+        @media (max-width: 480px) {
+            :root {
+                --primary-orbit-radius: 120px;
+                --secondary-orbit-radius: 90px;
+                --node-size: 70px;
+                --node-inner-size: 56px;
+            }
+            
+            .node-icon {
+                font-size: 16px;
+                margin-bottom: 3px;
+            }
+            
+            .node-content {
+                padding-top: 15px;
+            }
+            
+            /* DISTRIBUCIÓN LINEAL COMPLETA */
+            /* Diseño en estrella con ángulos estratégicos */
+            .branch-left {
+                top: calc(50% - var(--primary-orbit-radius));
+                left: 50%;
+            }
+            
+            .branch-right {
+                top: 50%;
+                left: calc(50% + var(--primary-orbit-radius));
+            }
+            
+            .branch-bottom {
+                top: calc(50% + var(--primary-orbit-radius));
+                left: 50%;
+            }
+            
+            /* Sub-nodos organizados verticalmente */
+            /* Programación (arriba) */
+            .left-sub-1, .left-sub-2, .left-sub-3 {
+                left: 50%;
+            }
+            
+            .left-sub-1 {
+                top: calc(50% - var(--primary-orbit-radius) - var(--secondary-orbit-radius) * 0.7);
+            }
+            
+            .left-sub-2 {
+                top: calc(50% - var(--primary-orbit-radius) - var(--secondary-orbit-radius) * 1.4);
+            }
+            
+            .left-sub-3 {
+                top: calc(50% - var(--primary-orbit-radius) - var(--secondary-orbit-radius) * 2.1);
+            }
+            
+            /* Game Dev (derecha) - Distribuidos verticalmente */
+            .right-sub-1, .right-sub-2, .right-sub-3, .right-sub-4 {
+                left: calc(50% + var(--primary-orbit-radius) + var(--secondary-orbit-radius) * 0.7);
+            }
+            
+            .right-sub-1 {
+                top: calc(50% - var(--secondary-orbit-radius) * 1.5);
+            }
+            
+            .right-sub-2 {
+                top: calc(50% - var(--secondary-orbit-radius) * 0.5);
+            }
+            
+            .right-sub-3 {
+                top: calc(50% + var(--secondary-orbit-radius) * 0.5);
+            }
+            
+            .right-sub-4 {
+                top: calc(50% + var(--secondary-orbit-radius) * 1.5);
+            }
+            
+            /* Tools (abajo) */
+            .bottom-sub-1, .bottom-sub-2, .bottom-sub-3, .bottom-sub-4 {
+                left: 50%;
+            }
+            
+            .bottom-sub-1 {
+                top: calc(50% + var(--primary-orbit-radius) + var(--secondary-orbit-radius) * 0.7);
+            }
+            
+            .bottom-sub-2 {
+                top: calc(50% + var(--primary-orbit-radius) + var(--secondary-orbit-radius) * 1.4);
+            }
+            
+            .bottom-sub-3 {
+                top: calc(50% + var(--primary-orbit-radius) + var(--secondary-orbit-radius) * 2.1);
+            }
+            
+            .bottom-sub-4 {
+                top: calc(50% + var(--primary-orbit-radius) + var(--secondary-orbit-radius) * 2.8);
+            }
+        }
+        
+        /* Móviles muy pequeños */
+        @media (max-width: 360px) {
+            :root {
+                --primary-orbit-radius: 90px;
+                --secondary-orbit-radius: 70px;
+                --node-size: 60px;
+                --node-inner-size: 48px;
+                --connection-thickness: 3px;
+            }
+            
+            .node-icon {
+                font-size: 14px;
+                margin-bottom: 2px;
+            }
+            
+            .node-title {
+                font-size: 7px;
+            }
+            
+            /* Estructura vertical aún más compacta */
+            .branch-left {
+                top: calc(50% - var(--primary-orbit-radius) * 0.9);
+            }
+            
+            .branch-right {
+                top: 50%;
+                left: calc(50% + var(--primary-orbit-radius) * 0.9);
+            }
+            
+            .branch-bottom {
+                top: calc(50% + var(--primary-orbit-radius) * 0.9);
+            }
+            
+            /* Ajustar subnodos para mayor compactación */
+            .left-sub-1 {
+                top: calc(50% - var(--primary-orbit-radius) * 0.9 - var(--secondary-orbit-radius) * 0.7);
+            }
+            
+            .left-sub-2 {
+                top: calc(50% - var(--primary-orbit-radius) * 0.9 - var(--secondary-orbit-radius) * 1.4);
+            }
+            
+            .left-sub-3 {
+                top: calc(50% - var(--primary-orbit-radius) * 0.9 - var(--secondary-orbit-radius) * 2.1);
+            }
+            
+            .right-sub-1, .right-sub-2, .right-sub-3, .right-sub-4 {
+                left: calc(50% + var(--primary-orbit-radius) * 0.9 + var(--secondary-orbit-radius) * 0.7);
+            }
+            
+            .bottom-sub-1 {
+                top: calc(50% + var(--primary-orbit-radius) * 0.9 + var(--secondary-orbit-radius) * 0.7);
+            }
+            
+            .bottom-sub-2 {
+                top: calc(50% + var(--primary-orbit-radius) * 0.9 + var(--secondary-orbit-radius) * 1.4);
+            }
+            
+            .bottom-sub-3 {
+                top: calc(50% + var(--primary-orbit-radius) * 0.9 + var(--secondary-orbit-radius) * 2.1);
+            }
+            
+            .bottom-sub-4 {
+                top: calc(50% + var(--primary-orbit-radius) * 0.9 + var(--secondary-orbit-radius) * 2.8);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Interfaz tipo RPG -->
+        <div class="ui-frame">
+            <div class="ui-title">ÁRBOL DE TECNOLOGÍAS</div>
+            <div class="ui-description">
+                Selecciona habilidades para tu personaje.<br>
+                Cada nodo desbloquea nuevas capacidades.
+            </div>
+        </div>
+        
+        <div class="skill-tree" id="skillTree">
+            <!-- Central node (root) -->
+            <div class="node root" id="root" data-id="root">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">⟨⟩✎✦</div>
+                            <div class="node-title">DEV CORE</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 1</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main branches -->
+            <div class="node branch-left" data-id="programming" data-parent="root">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">⌨️</div>
+                            <div class="node-title">PROGRAMACIÓN</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node branch-right" data-id="gamedev" data-parent="root">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🎮</div>
+                            <div class="node-title">DESARROLLO DE JUEGOS</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node branch-bottom" data-id="tools" data-parent="root">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🛠️</div>
+                            <div class="node-title">HERRAMIENTAS</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 2</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Left branch subnodes -->
+            <div class="node left-sub-1" data-id="algorithms" data-parent="programming">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🧠</div>
+                            <div class="node-title">ALGORITMOS</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node left-sub-2" data-id="datastructures" data-parent="programming">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🗂️</div>
+                            <div class="node-title">ESTRUCTURAS DE DATOS</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node left-sub-3" data-id="patterns" data-parent="programming">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🧩</div>
+                            <div class="node-title">PATRONES DE DISEÑO</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right branch subnodes -->
+            <div class="node right-sub-1" data-id="engines" data-parent="gamedev">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🎮</div>
+                            <div class="node-title">MOTORES DE JUEGO</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node right-sub-2" data-id="graphics" data-parent="gamedev">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🧊</div>
+                            <div class="node-title">GRÁFICOS 2D/3D</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node right-sub-3" data-id="physics" data-parent="gamedev">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">⚙️</div>
+                            <div class="node-title">FÍSICA Y ANIMACIÓN</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node right-sub-4" data-id="ai" data-parent="gamedev">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🤖</div>
+                            <div class="node-title">IA DE NPCS</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom branch subnodes -->
+            <div class="node bottom-sub-1" data-id="git" data-parent="tools">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🐙</div>
+                            <div class="node-title">GIT</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node bottom-sub-2" data-id="cicd" data-parent="tools">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🔁</div>
+                            <div class="node-title">CI/CD</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node bottom-sub-3" data-id="agile" data-parent="tools">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">📋</div>
+                            <div class="node-title">SCRUM/KANBAN</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="node bottom-sub-4" data-id="testing" data-parent="tools">
+                <div class="node-outer">
+                    <div class="node-inner">
+                        <div class="node-content">
+                            <div class="node-icon">🧪</div>
+                            <div class="node-title">TESTING</div>
+                        </div>
+                        <div class="node-level-container">
+                            <div class="node-level">LVL 3</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the skill tree container
+            const skillTree = document.getElementById('skillTree');
+            
+            // All nodes and their connections
+            const nodes = document.querySelectorAll('.node');
+            const connections = [];
+            
+            // Node relationships defined in HTML data attributes
+            const nodeRelationships = {};
+            
+            // Create connections between nodes
+            function createConnections() {
+                // Map nodes by id for easy reference
+                const nodeMap = {};
+                nodes.forEach(node => {
+                    const id = node.getAttribute('data-id');
+                    nodeMap[id] = node;
+                    
+                    // Build relationships
+                    const parentId = node.getAttribute('data-parent');
+                    if (parentId) {
+                        if (!nodeRelationships[parentId]) {
+                            nodeRelationships[parentId] = [];
+                        }
+                        nodeRelationships[parentId].push(id);
+                    }
+                });
+                
+                // Create connection lines
+                nodes.forEach(node => {
+                    const parentId = node.getAttribute('data-parent');
+                    if (parentId && nodeMap[parentId]) {
+                        const connection = createConnection(nodeMap[parentId], node);
+                        connections.push(connection);
+                        skillTree.appendChild(connection);
+                    }
+                });
+            }
+            
+            // Create a connection line between two nodes
+            function createConnection(fromNode, toNode) {
+                const connection = document.createElement('div');
+                connection.className = 'connection';
+                connection.setAttribute('data-from', fromNode.getAttribute('data-id'));
+                connection.setAttribute('data-to', toNode.getAttribute('data-id'));
+                
+                updateConnection(connection, fromNode, toNode);
+                return connection;
+            }
+            
+            // Update connection position and dimensions
+            function updateConnection(connection, fromNode, toNode) {
+                const fromRect = fromNode.getBoundingClientRect();
+                const toRect = toNode.getBoundingClientRect();
+                const containerRect = skillTree.getBoundingClientRect();
+                
+                // Calculate center points relative to the container
+                const fromCenterX = fromRect.left + fromRect.width / 2 - containerRect.left;
+                const fromCenterY = fromRect.top + fromRect.height / 2 - containerRect.top;
+                const toCenterX = toRect.left + toRect.width / 2 - containerRect.left;
+                const toCenterY = toRect.top + toRect.height / 2 - containerRect.top;
+                
+                // Calculate the angle and length
+                const dx = toCenterX - fromCenterX;
+                const dy = toCenterY - fromCenterY;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                // Position and rotate the connection
+                connection.style.width = `${length}px`;
+                connection.style.left = `${fromCenterX}px`;
+                connection.style.top = `${fromCenterY}px`;
+                connection.style.transform = `rotate(${angle}deg)`;
+            }
+            
+            // Update all connections (for responsive adjustments)
+            function updateAllConnections() {
+                connections.forEach(connection => {
+                    const fromId = connection.getAttribute('data-from');
+                    const toId = connection.getAttribute('data-to');
+                    const fromNode = document.querySelector(`.node[data-id="${fromId}"]`);
+                    const toNode = document.querySelector(`.node[data-id="${toId}"]`);
+                    
+                    if (fromNode && toNode) {
+                        updateConnection(connection, fromNode, toNode);
+                    }
+                });
+            }
+            
+            // Simplificado: Mostrar/Ocultar árbol inmediatamente
+            function toggleTree() {
+                if (skillTree.classList.contains('tree-expanded')) {
+                    skillTree.classList.remove('tree-expanded');
+                } else {
+                    skillTree.classList.add('tree-expanded');
+                }
+            }
+            
+            /* Función para destacar conexión y nodo relacionado al hacer hover */
+            function highlightConnectionAndNode(node) {
+                const nodeId = node.getAttribute('data-id');
+                const parentId = node.getAttribute('data-parent');
+                
+                // Si es un nodo principal (con padre 'root')
+                if (parentId === 'root') {
+                    // Iluminar solo la conexión entre este nodo y el central
+                    const connection = document.querySelector(`.connection[data-from="root"][data-to="${nodeId}"]`);
+                    if (connection) {
+                        connection.classList.add('hover-active');
+                    }
+                    
+                    // Iluminar también el nodo central
+                    const rootNode = document.querySelector('.root');
+                    rootNode.classList.add('node-highlighted');
+                    
+                } else if (parentId) {
+                    // Si es un subnodo, iluminar conexión con su padre y el padre
+                    const connection = document.querySelector(`.connection[data-from="${parentId}"][data-to="${nodeId}"]`);
+                    if (connection) {
+                        connection.classList.add('hover-active');
+                    }
+                    
+                    // Iluminar el nodo padre
+                    const parentNode = document.querySelector(`.node[data-id="${parentId}"]`);
+                    if (parentNode) {
+                        parentNode.classList.add('node-highlighted');
+                    }
+                }
+            }
+            
+            /* Función para quitar destacados de hover */
+            function removeHighlights() {
+                // Quitar clase 'hover-active' de todas las conexiones
+                document.querySelectorAll('.connection.hover-active').forEach(conn => {
+                    conn.classList.remove('hover-active');
+                });
+                
+                // Quitar clase 'node-highlighted' de todos los nodos
+                document.querySelectorAll('.node.node-highlighted').forEach(node => {
+                    node.classList.remove('node-highlighted');
+                });
+            }
+            
+            /* Manejador de interacciones de nodos */
+            function handleNodeInteractions() {
+                // Evento para el nodo raíz (hover y click)
+                const rootNode = document.querySelector('.root');
+                
+                rootNode.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    toggleTree(); // Mostrar/ocultar árbol inmediatamente
+                });
+                
+                rootNode.addEventListener('mouseenter', function() {
+                    if (skillTree.classList.contains('tree-expanded')) {
+                        // Si está expandido, iluminar todas las conexiones directas
+                        document.querySelectorAll('.connection[data-from="root"]').forEach(conn => {
+                            conn.classList.add('hover-active');
+                        });
+                        
+                        // Iluminar nodos principales conectados al raíz
+                        document.querySelectorAll('.node[data-parent="root"]').forEach(node => {
+                            node.classList.add('node-highlighted');
+                        });
+                    }
+                });
+                
+                rootNode.addEventListener('mouseleave', function() {
+                    removeHighlights();
+                });
+                
+                // Para los otros nodos (no raíz)
+                nodes.forEach(node => {
+                    if (!node.classList.contains('root')) {
+                        // Evento mouseenter para iluminar conexión y nodo conectado
+                        node.addEventListener('mouseenter', function() {
+                            highlightConnectionAndNode(this);
+                        });
+                        
+                        // Evento mouseleave para quitar iluminación
+                        node.addEventListener('mouseleave', function() {
+                            removeHighlights();
+                        });
+                        
+                        // Evento click para activar/desactivar nodo
+                        node.addEventListener('click', function() {
+                            this.classList.toggle('active');
+                        });
+                    }
+                });
+            }
+            
+            // Find path from root to a node
+            function findPathToNode(nodeId, path = [], visited = new Set()) {
+                if (visited.has(nodeId)) return null;
+                visited.add(nodeId);
+                
+                path.push(nodeId);
+                
+                if (nodeId === 'root') {
+                    return path;
+                }
+                
+                const node = document.querySelector(`.node[data-id="${nodeId}"]`);
+                const parentId = node.getAttribute('data-parent');
+                
+                if (parentId) {
+                    return findPathToNode(parentId, path, visited);
+                }
+                
+                return null;
+            }
+            
+            // Highlight the path from root to a node
+            function highlightPathToNode(nodeId) {
+                const path = findPathToNode(nodeId);
+                if (!path) return;
+                
+                // Highlight all nodes in the path
+                path.forEach(id => {
+                    const node = document.querySelector(`.node[data-id="${id}"]`);
+                    if (node) {
+                        node.classList.add('active');
+                    }
+                });
+                
+                // Highlight all connections in the path
+                for (let i = 0; i < path.length - 1; i++) {
+                    const fromId = path[i + 1]; // Parent is further in path (towards root)
+                    const toId = path[i]; // Child is closer in path
+                    
+                    const connection = document.querySelector(`.connection[data-from="${fromId}"][data-to="${toId}"]`);
+                    if (connection) {
+                        connection.classList.add('active-path');
+                    }
+                }
+            }
+            
+            // Reset all active states
+            function resetActiveStates() {
+                nodes.forEach(node => {
+                    node.classList.remove('active');
+                });
+                
+                connections.forEach(connection => {
+                    connection.classList.remove('active-path');
+                });
+            }
+            
+            // Initial setup
+            createConnections();
+            handleNodeInteractions();
+            
+            // Expandir el árbol automáticamente al cargar
+            setTimeout(() => {
+                skillTree.classList.add('tree-expanded');
+            }, 300);
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                // Actualizar todas las conexiones después de un breve retraso
+                // para permitir que las transiciones CSS se completen
+                setTimeout(updateAllConnections, 500);
+            });
+            
+            // Actualizar conexiones al cambiar orientación en dispositivos móviles
+            window.addEventListener('orientationchange', function() {
+                // Esperar a que la orientación cambie completamente
+                setTimeout(updateAllConnections, 500);
+            });
+        });
+    </script>
+</body>
+</html>

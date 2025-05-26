@@ -1,0 +1,2076 @@
+/* Estilos específicos actualizados para la página about - Estilo Terminal CRT */
+
+/* Fuentes y variables */
+:root {
+  --hp-color: #ff3355;
+  --mp-color: #00a2ff;
+  --xp-color: #ffcc00;
+  --pixel-size: 2px;
+  --pixel-border-size: 4px;
+  --menu-select-color: #ffcc00;
+  --pixel-shadow: 0 0 0 var(--pixel-size) rgba(0, 0, 0, 0.8);
+  --terminal-dark: rgba(0, 10, 10, 0.9);
+  --terminal-medium: rgba(0, 20, 20, 0.9);
+  
+  /* Nuevos colores de terminal en lugar de madera */
+  --terminal-border-dark: #003b30;
+  --terminal-border-medium: #005a49;
+  --terminal-border-light: #008870;
+  --terminal-panel-bg: #0a1615;
+  --terminal-accent: #00eebb;
+}
+
+/* Importación de fuentes pixeladas adicionales si no existen */
+@import url('https://fonts.cdnfonts.com/css/press-start-2p');
+@import url('https://fonts.cdnfonts.com/css/minecraft');
+
+/* Body scrolling improvements */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--terminal-color) var(--terminal-bg);
+  image-rendering: pixelated;
+}
+
+/* Main - NUEVO FONDO DE TERMINAL */
+main {
+  flex: 1;
+  z-index: 5;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: visible;
+  min-height: 0;
+  
+  /* Nuevo fondo de terminal con textura de circuitos */
+  background: 
+    linear-gradient(rgba(12, 12, 12, 0.92), rgba(8, 12, 12, 0.96)),
+    url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cg%3E%3Crect width='200' height='200' fill='%23000'/%3E%3Cpath d='M10,10 L190,10 L190,190 L10,190 z' fill='none' stroke='%2300ffcc22' stroke-width='0.5'/%3E%3Cpath d='M30,10 L30,190' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M50,10 L50,190' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M70,10 L70,190' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M90,10 L90,190' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M110,10 L110,190' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M130,10 L130,190' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M150,10 L150,190' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M170,10 L170,190' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M10,30 L190,30' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M10,50 L190,50' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M10,70 L190,70' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M10,90 L190,90' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M10,110 L190,110' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M10,130 L190,130' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M10,150 L190,150' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Cpath d='M10,170 L190,170' stroke='%2300ffcc22' stroke-width='0.3'/%3E%3Ccircle cx='30' cy='30' r='3' fill='%2300ffcc33'/%3E%3Ccircle cx='70' cy='70' r='3' fill='%2300ffcc33'/%3E%3Ccircle cx='110' cy='110' r='3' fill='%2300ffcc33'/%3E%3Ccircle cx='150' cy='150' r='3' fill='%2300ffcc33'/%3E%3Ccircle cx='170' cy='130' r='3' fill='%2300ffcc33'/%3E%3Ccircle cx='90' cy='50' r='3' fill='%2300ffcc33'/%3E%3C/g%3E%3C/svg%3E");
+  
+  /* Añadir un sutil brillo para efecto de terminal */
+  box-shadow: inset 0 0 40px 10px rgba(0, 255, 204, 0.1);
+}
+
+/* Character Selection Screen */
+.character-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  position: relative;
+  gap: 1.5rem;
+  width: 100%;
+  padding-bottom: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.screen-title {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
+  color: var(--terminal-color);
+  text-shadow: var(--terminal-glow), 3px 3px 0 rgba(0, 0, 0, 0.8);
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: glitch 3s infinite;
+  text-align: center;
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--terminal-bg);
+  border-width: var(--pixel-border-size);
+  border-style: solid;
+  border-image: linear-gradient(45deg, var(--terminal-border-medium), var(--terminal-border-dark)) 1;
+  box-shadow: var(--pixel-shadow), var(--terminal-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.screen-title::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(0, 255, 204, 0.4), transparent);
+  animation: screen-title-shine 2s infinite;
+}
+
+@keyframes screen-title-shine {
+  0% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* TERMINAL STYLING - CHARACTER CONTAINER */
+.character-container {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  gap: 1.5rem;
+  position: relative;
+  background-color: rgba(8, 15, 15, 0.8);
+  border: 8px solid transparent;
+  border-image: linear-gradient(to bottom, var(--terminal-border-light), var(--terminal-border-dark)) 1;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(0, 255, 204, 0.3);
+  padding: 1.5rem;
+}
+
+/* Decoración de fondo para panel de terminal */
+.character-container::before {
+  content: "";
+  position: absolute;
+  width: calc(100% - 3rem);
+  height: calc(100% - 3rem);
+  top: 1.5rem;
+  left: 1.5rem;
+  background-image: 
+    repeating-linear-gradient(0deg, rgba(0, 255, 204, 0.05) 0px, rgba(0, 255, 204, 0.05) 1px, transparent 1px, transparent 20px),
+    repeating-linear-gradient(90deg, rgba(0, 255, 204, 0.05) 0px, rgba(0, 255, 204, 0.05) 1px, transparent 1px, transparent 20px);
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+.character-container::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: radial-gradient(circle at center, rgba(0, 255, 204, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.character-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* TERMINAL STYLE - CHARACTER FRAME */
+.character-frame {
+  width: min(280px, 90vw);
+  height: min(350px, 120vw);
+  border: 4px solid var(--terminal-color);
+  background: linear-gradient(to bottom, var(--terminal-dark), var(--terminal-bg));
+  box-shadow: 
+    0 0 20px rgba(0, 255, 204, 0.4), 
+    inset 0 0 30px rgba(0, 255, 204, 0.3),
+    var(--pixel-shadow);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  image-rendering: pixelated;
+}
+
+.character-frame::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle, transparent 60%, rgba(0, 255, 204, 0.2) 100%),
+    url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h1v1H1V1zm2 2h1v1H3V3z' fill='%2300ffcc' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Enhance character frame with improved scan effect */
+.character-frame::after {
+  content: "PLAYER 1";
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.6rem;
+  color: var(--terminal-color);
+  text-shadow: var(--terminal-glow);
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 2px 5px;
+  z-index: 2;
+  border: 1px solid var(--terminal-color);
+  border-radius: 2px;
+  box-shadow: var(--terminal-glow);
+  animation: subtle-pulse 3s infinite alternate;
+}
+
+/* Scan line effect for character frame */
+.character-frame .scan-line {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: rgba(0, 255, 204, 0.5);
+  box-shadow: 0 0 8px var(--terminal-color);
+  animation: scan-line 3s linear infinite;
+  z-index: 3;
+  pointer-events: none;
+}
+
+@keyframes scan-line {
+  0% { 
+    top: 0;
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.8;
+  }
+  95% {
+    opacity: 0.8;
+  }
+  100% { 
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.character-sprite {
+  width: 80%;
+  height: 80%;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="120" viewBox="0 0 80 120" fill="none"><rect x="25" y="10" width="30" height="30" rx="15" fill="%2300ffcc"/><rect x="35" y="40" width="10" height="40" fill="%2300ffcc"/><rect x="25" y="50" width="30" height="10" fill="%2300ffcc"/><rect x="20" y="60" width="15" height="30" fill="%2300ffcc"/><rect x="45" y="60" width="15" height="30" fill="%2300ffcc"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  animation: gentle-float 4s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 10px rgba(0, 255, 204, 0.5));
+}
+
+/* TERMINAL STYLE - CHARACTER INFO */
+.character-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.character-header {
+  background-color: var(--terminal-bg);
+  border: 2px solid var(--terminal-color);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  box-shadow: var(--terminal-glow), var(--pixel-shadow);
+  position: relative;
+  overflow: hidden;
+  animation: fade-in-up 0.5s forwards;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.character-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300ffcc' fill-opacity='0.2'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.character-name {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: clamp(1.2rem, 3vw, 1.5rem);
+  color: var(--terminal-color);
+  text-shadow: var(--terminal-glow), 2px 2px 0 rgba(0, 0, 0, 0.8);
+  margin-bottom: 0.3rem;
+  position: relative;
+  display: inline-block;
+  letter-spacing: 1px;
+}
+
+.character-name::after {
+  content: "";
+  position: absolute;
+  bottom: -3px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: var(--terminal-color);
+  box-shadow: var(--terminal-glow);
+}
+
+.character-class {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  letter-spacing: 0.5px;
+  text-shadow: var(--terminal-glow), 1px 1px 0 rgba(0, 0, 0, 0.8);
+  color: var(--text-color-bright);
+  padding: 0.2rem 0;
+}
+
+.character-level {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  letter-spacing: 0.5px;
+  color: var(--menu-select-color);
+  text-shadow: var(--terminal-glow), 1px 1px 0 rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 0.3rem 0.6rem;
+  border-radius: 2px;
+  border: 1px solid var(--terminal-color);
+  margin-top: 0.7rem;
+  display: inline-block;
+}
+
+/* TERMINAL STYLE - STATS CONTAINER */
+.stats-container {
+  background-color: var(--terminal-panel-bg);
+  border: 2px solid var(--terminal-color);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: var(--terminal-glow), var(--pixel-shadow);
+  position: relative;
+  animation: fade-in-up 0.5s forwards;
+  animation-delay: 0.4s;
+  animation-fill-mode: both;
+}
+
+.stats-container::before {
+  content: "STATS";
+  position: absolute;
+  top: -15px;
+  left: 10px;
+  background-color: var(--terminal-bg);
+  padding: 4px 12px;
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.75rem;
+  color: var(--text-color-bright);
+  text-shadow: var(--terminal-glow);
+  border: 1px solid var(--terminal-color);
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+  letter-spacing: 1px;
+  border-radius: 2px;
+  z-index: 3;
+  opacity: 1;
+  background: var(--terminal-bg);
+}
+
+.stat-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat-label {
+  font-size: clamp(0.6rem, 2vw, 0.7rem);
+  color: var(--text-color-bright);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 0.2rem 0.4rem;
+  border-radius: 2px;
+  border: 1px solid var(--terminal-border-medium);
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Improve stat bars appearance */
+.stat-progress {
+  height: 15px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 2px solid var(--terminal-color);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--pixel-shadow);
+  border-radius: 3px;
+}
+
+.stat-progress::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(0, 255, 204, 0.03) 1px, transparent 1px);
+  background-size: 5px 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@keyframes progress-scan {
+  0% { transform: translateX(-20px); }
+  100% { transform: translateX(calc(100% + 20px)); }
+}
+
+.stat-progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 2px, transparent 2px, transparent 4px);
+  pointer-events: none;
+}
+
+.stat-fill {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: width 1s;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  animation: terminal-glow 3s infinite;
+}
+
+.stat-fill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0px, rgba(255, 255, 255, 0.1) 3px, transparent 3px, transparent 6px);
+  animation: stat-movement 2s linear infinite;
+}
+
+@keyframes stat-movement {
+  0% { background-position: 0 0; }
+  100% { background-position: 12px 12px; }
+}
+
+.hp-fill {
+  background-color: var(--hp-color);
+  box-shadow: 0 0 10px rgba(255, 51, 85, 0.7);
+  width: 85%;
+}
+
+.mp-fill {
+  background-color: var(--mp-color);
+  box-shadow: 0 0 10px rgba(0, 162, 255, 0.7);
+  width: 70%;
+}
+
+.xp-fill {
+  background-color: var(--xp-color);
+  box-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+  width: 40%;
+}
+
+/* TERMINAL STYLE - SKILLS CONTAINER */
+.skills-container {
+  background-color: var(--terminal-panel-bg);
+  border: 2px solid var(--terminal-color);
+  padding: 1.2rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+  position: relative;
+  margin-top: 0rem;
+  box-shadow: var(--terminal-glow), var(--pixel-shadow);
+  animation: fade-in-up 0.5s forwards;
+  animation-delay: 0.6s;
+  animation-fill-mode: both;
+}
+
+/* Añadir un efecto de patrón de fondo para el contenedor */
+.skills-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    repeating-linear-gradient(45deg, rgba(0, 255, 204, 0.03) 0px, rgba(0, 255, 204, 0.03) 2px, transparent 2px, transparent 4px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Mejorar la visibilidad del título "ABILITIES" */
+.skills-container::before {
+  content: "ABILITIES";
+  position: absolute;
+  top: -15px;
+  left: 15px;
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.75rem;
+  color: var(--text-color-bright);
+  text-shadow: var(--terminal-glow);
+  background-color: var(--terminal-bg);
+  padding: 4px 12px;
+  z-index: 3;
+  border: 1px solid var(--terminal-color);
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+  letter-spacing: 1px;
+  border-radius: 2px;
+  text-transform: uppercase;
+  opacity: 1;
+  /* Asegurar que el fondo sea completamente opaco */
+  background: var(--terminal-bg);
+}
+
+/* Efecto de escaneo en el borde inferior */
+.skills-container::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, var(--terminal-color), transparent);
+  animation: border-scan 3s infinite alternate;
+  z-index: 1;
+}
+
+@keyframes border-scan {
+  0% { width: 0; opacity: 0.7; }
+  100% { width: 100%; opacity: 0.3; }
+}
+
+.skill-item {
+  background-color: var(--terminal-panel-bg);
+  border: 2px solid var(--terminal-color);
+  padding: 0.6rem;
+  text-align: center;
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.65rem;
+  color: var(--terminal-color);
+  text-shadow: var(--terminal-glow), 1px 1px 0 rgba(0, 0, 0, 1);
+  box-shadow: var(--terminal-glow), var(--pixel-shadow);
+  transition: all 0.3s;
+  cursor: pointer;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto de "actualización del sistema" - afecta a todas las skills a la vez */
+@keyframes system-refresh {
+  0%, 95%, 100% {
+    border-color: var(--terminal-color);
+    background-color: var(--terminal-panel-bg);
+    box-shadow: var(--terminal-glow), var(--pixel-shadow);
+  }
+  96% {
+    border-color: var(--terminal-color);
+    background-color: rgba(0, 10, 8, 0.95);
+    box-shadow: 0 0 5px var(--terminal-color);
+  }
+  97% {
+    border-color: var(--terminal-color);
+    background-color: rgba(0, 255, 204, 0.15);
+    box-shadow: 0 0 8px var(--terminal-color), inset 0 0 5px rgba(0, 255, 204, 0.2);
+  }
+  98% {
+    border-color: var(--terminal-color);
+    background-color: var(--terminal-panel-bg);
+    box-shadow: var(--terminal-glow), var(--pixel-shadow);
+  }
+}
+
+.skill-item:hover, .skill-item:focus {
+  background-color: rgba(0, 60, 45, 0.9);
+  border-color: var(--text-color-bright);
+  box-shadow: 0 0 12px rgba(0, 255, 204, 0.6);
+  text-shadow: 0 0 5px rgba(0, 255, 204, 0.7);
+  transform: translateY(-2px);
+  color: #ffffff;
+  /* Efecto de distorsión más notorio */
+  position: relative;
+}
+
+.skill-item:hover::after, .skill-item:focus::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    rgba(0, 255, 204, 0.08) 4px,
+    rgba(0, 255, 204, 0.08) 8px
+  );
+  pointer-events: none;
+  animation: subtle-glitch 1.5s infinite linear;
+  z-index: 1;
+}
+
+@keyframes subtle-glitch {
+  0% {
+    opacity: 0.5;
+    background-position: 0 0;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0.5;
+    background-position: 100% 100%;
+  }
+}
+
+/* ESTILO DE TERMINAL PARA MENÚ */
+.menu-container {
+  width: 100%;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: rgba(8, 15, 15, 0.8);
+  border: 2px solid var(--terminal-color);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.3), var(--terminal-glow);
+  position: relative;
+  animation: fade-in-up 0.5s forwards;
+  animation-delay: 0.8s;
+  animation-fill-mode: both;
+}
+
+.menu-container::before {
+  content: "MENU";
+  position: absolute;
+  top: -12px;
+  left: 10px;
+  background-color: var(--terminal-bg);
+  padding: 4px 12px;
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.75rem;
+  color: var(--text-color-bright);
+  text-shadow: var(--terminal-glow);
+  border: 1px solid var(--terminal-color);
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.4);
+  letter-spacing: 1px;
+  border-radius: 2px;
+  text-transform: uppercase;
+}
+
+.menu-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.menu-button {
+  background-color: var(--terminal-panel-bg);
+  border: 2px solid var(--terminal-color);
+  padding: 0.8rem;
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: clamp(0.7rem, 2.5vw, 0.8rem);
+  letter-spacing: 0.5px;
+  color: var(--terminal-color);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  box-shadow: var(--terminal-glow), var(--pixel-shadow);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  min-height: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-button::before {
+  content: ">";
+  position: absolute;
+  left: 10px;
+  color: var(--menu-select-color);
+  opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.menu-button:hover, .menu-button:focus {
+  background-color: rgba(0, 255, 204, 0.2);
+  transform: translateY(-3px);
+  color: #fff;
+  padding-left: 1.5rem;
+  text-shadow: 0 0 8px rgba(0, 255, 204, 0.7);
+}
+
+.menu-button:hover::before, .menu-button:focus::before {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.menu-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 5px rgba(0, 255, 204, 0.3);
+}
+
+/* Personalización de la barra de desplazamiento con estilo terminal */
+::-webkit-scrollbar {
+  width: 12px;
+  background-color: var(--terminal-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--terminal-color);
+  border-radius: 0;
+  border: 2px solid var(--terminal-bg);
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0, 0, 0, 0.2) 3px, rgba(0, 0, 0, 0.2) 6px);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--terminal-accent);
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--terminal-bg);
+  border-radius: 0;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0, 255, 204, 0.1) 3px, rgba(0, 255, 204, 0.1) 6px);
+}
+
+/* En dispositivos móviles, hacer la barra más delgada */
+@media (max-width: 767px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    border-width: 2px;
+  }
+}
+
+/* Líneas decorativas y elementos cyberpunk */
+.circuit-lines {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M0,50 L100,50" stroke="%2300ffcc22" stroke-width="0.5"/><path d="M50,0 L50,100" stroke="%2300ffcc22" stroke-width="0.5"/></svg>');
+  pointer-events: none;
+  opacity: 0.2;
+  z-index: 1;
+}
+
+/* Modal Skills con tema de terminal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s;
+  backdrop-filter: blur(3px);
+}
+
+.modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background-color: var(--terminal-bg);
+  border: 2px solid var(--terminal-color);
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  box-shadow: var(--terminal-glow), 0 0 20px rgba(0, 255, 204, 0.3), var(--pixel-shadow);
+  animation: modal-open 0.3s;
+  background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1h1v1H1V1zm2 2h1v1H3V3z' fill='%2300ffcc' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+}
+
+@keyframes modal-open {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 2px solid var(--terminal-color);
+  background-color: var(--terminal-panel-bg);
+}
+
+.modal-title {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: clamp(0.8rem, 3vw, 1rem);
+  color: var(--terminal-color);
+  text-shadow: var(--terminal-glow), 2px 2px 0 rgba(0, 0, 0, 1);
+  text-transform: uppercase;
+}
+
+.modal-close {
+  background: none;
+  border: 2px solid var(--terminal-color);
+  color: var(--terminal-color);
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 1.2rem;
+  cursor: pointer;
+  height: 32px;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  box-shadow: var(--terminal-glow);
+  padding-bottom: 4px;
+}
+
+.modal-close:hover {
+  background-color: rgba(0, 255, 204, 0.2);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: 65vh;
+  background-color: var(--terminal-dark);
+  background-image: 
+    linear-gradient(rgba(0, 255, 204, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 204, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+.modal .skills-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+  margin-top: 0;
+}
+
+.modal .skills-container::before {
+  display: none;
+}
+
+/* Soporte táctil */
+.skill-item.touch-active {
+  background-color: rgba(0, 255, 204, 0.2);
+  transform: scale(1.05) translateY(-3px);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.5), var(--pixel-shadow);
+}
+
+/* Media queries para responsive - MEJORA DE DISTRIBUCIÓN */
+@media (min-width: 540px) {
+  main {
+    padding: 1.5rem;
+  }
+
+  .menu-buttons {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .modal .skills-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .skills-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  main {
+    padding: 2rem;
+  }
+  
+  .character-container {
+    display: grid;
+    grid-template-columns: minmax(300px, 1fr) 2fr;
+    gap: 2rem;
+    align-items: start;
+  }
+  
+  .character-visual {
+    position: sticky;
+    top: 2rem;
+  }
+  
+  .character-info {
+    gap: 1.5rem;
+  }
+  
+  .skills-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  
+  .menu-buttons {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+  
+  .modal-content {
+    max-width: 800px;
+  }
+  
+  .modal .skills-container {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .character-screen {
+    padding: 0 2rem 2rem 2rem;
+  }
+  
+  .screen-title {
+    margin-bottom: 2rem;
+  }
+  
+  .character-container {
+    grid-template-columns: minmax(350px, 1fr) 3fr;
+    gap: 3rem;
+  }
+  
+  .character-frame {
+    width: 320px;
+    height: 420px;
+  }
+  
+  .character-sprite {
+    width: 220px;
+    height: 320px;
+  }
+  
+  .character-info {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr;
+    gap: 1.5rem;
+  }
+  
+  .skills-container {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+  
+  .menu-container {
+    margin-top: 3rem;
+  }
+  
+  .menu-buttons {
+    gap: 1.2rem;
+  }
+  
+  .modal-content {
+    max-width: 900px;
+    max-height: 80vh;
+  }
+  
+  .modal-body {
+    padding: 2rem;
+  }
+  
+  .modal .skills-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  main {
+    padding: 3rem;
+  }
+  
+  .character-container {
+    grid-template-columns: minmax(400px, 1fr) 3fr;
+    gap: 4rem;
+  }
+  
+  .character-frame {
+    width: 360px;
+    height: 460px;
+  }
+  
+  .character-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    gap: 2rem;
+  }
+  
+  .character-header {
+    grid-column: 1 / -1;
+  }
+  
+  .skills-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-row: span 2;
+  }
+  
+  .menu-container {
+    max-width: 1200px;
+    margin: 3rem auto 2rem;
+  }
+}
+
+/* Fix para dispositivos muy pequeños */
+@media (max-width: 360px) {
+  main {
+    padding: 0.5rem;
+  }
+  
+  .character-name {
+    font-size: 0.9rem;
+  }
+  
+  .character-class,
+  .character-level {
+    font-size: 0.7rem;
+  }
+  
+  .stat-label {
+    font-size: 0.5rem;
+  }
+  
+  .skill-item {
+    font-size: 0.6rem;
+  }
+}
+
+/* Reducciones de animación para mejor rendimiento */
+@media (prefers-reduced-motion: reduce) {
+  .character-sprite {
+    animation: none;
+  }
+  
+  .screen-title {
+    animation: none;
+  }
+  
+  .screen-title::before {
+    animation: none;
+  }
+  
+  .menu-button:hover,
+  .skill-item:hover {
+    transform: none;
+  }
+  
+  .skill-item::before {
+    animation: none;
+  }
+  
+  .stat-fill::after {
+    animation: none;
+  }
+}
+
+/* Animaciones de selección para botones y elementos interactivos */
+@keyframes pulse-light {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.3); }
+}
+
+@keyframes glitch {
+  0% { 
+    text-shadow: var(--terminal-glow), 3px 3px 0 rgba(0, 0, 0, 0.8);
+    transform: translate(0);
+  }
+  1% { 
+    text-shadow: var(--terminal-glow), 3px 3px 0 rgba(0, 0, 0, 0.8), -2px 0 0 rgba(255, 0, 0, 0.7), 2px 0 0 rgba(0, 255, 255, 0.7);
+    transform: translate(-2px, 1px);
+  }
+  2% { 
+    text-shadow: var(--terminal-glow), 3px 3px 0 rgba(0, 0, 0, 0.8), 2px 0 0 rgba(255, 0, 0, 0.7), -2px 0 0 rgba(0, 255, 255, 0.7);
+    transform: translate(2px, -1px);
+  }
+  3% { 
+    text-shadow: var(--terminal-glow), 3px 3px 0 rgba(0, 0, 0, 0.8), -1px 0 0 rgba(255, 0, 0, 0.7), 1px 0 0 rgba(0, 255, 255, 0.7);
+    transform: translate(0);
+  }
+  4%, 100% { 
+    text-shadow: var(--terminal-glow), 3px 3px 0 rgba(0, 0, 0, 0.8);
+    transform: translate(0);
+  }
+}
+
+/* Animaciones adicionales */
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes subtle-pulse {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.02); filter: brightness(1.1); }
+}
+
+@keyframes terminal-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 204, 0.4); }
+  50% { box-shadow: 0 0 15px rgba(0, 255, 204, 0.7); }
+}
+
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Sistema de pestañas */
+.tabs-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  background-color: var(--terminal-panel-bg);
+  border: 2px solid var(--terminal-color);
+  padding: 0.5rem;
+  box-shadow: var(--terminal-glow);
+  z-index: 5;
+  position: relative;
+}
+
+/* Improved tab buttons style */
+.tab-button {
+  padding: 0.7rem 1.2rem;
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: clamp(0.6rem, 2vw, 0.8rem);
+  color: var(--terminal-color);
+  background-color: var(--terminal-bg);
+  border: 2px solid var(--terminal-border-medium);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  text-align: center;
+  flex: 1;
+  box-shadow: var(--pixel-shadow);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 1px;
+  text-shadow: var(--terminal-glow);
+}
+
+.tab-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tab-button:hover::before {
+  transform: translateX(100%);
+}
+
+.tab-button.active {
+  background-color: var(--terminal-color);
+  color: var(--terminal-bg);
+  box-shadow: var(--terminal-glow), 0 0 15px rgba(0, 255, 204, 0.4);
+  border-color: var(--terminal-color);
+  transform: translateY(0);
+  font-weight: bold;
+}
+
+.tab-content {
+  display: none;
+  width: 100%;
+  animation: tab-fade-in 0.4s ease forwards;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+@keyframes tab-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Árbol de habilidades */
+/* Diseño del árbol de habilidades profesional */
+.skill-tree-container {
+  width: 100%;
+  background-color: rgba(8, 15, 15, 0.9);
+  border: 2px solid var(--terminal-color);
+  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.7), 0 0 15px rgba(0, 255, 204, 0.3);
+  padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+  min-height: 600px;
+}
+
+.skill-tree-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at center, rgba(0, 255, 204, 0.07) 0%, rgba(0, 0, 0, 0.5) 100%),
+    linear-gradient(rgba(0, 255, 204, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 204, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px, 20px 20px;
+  background-position: center center;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.7;
+}
+
+.skill-tree-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Secciones de habilidades */
+.skill-section {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--terminal-color);
+  border-radius: 4px;
+  padding: 1.5rem;
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.2);
+  opacity: 0;
+  transform: translateY(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.section-header {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 1.1rem;
+  color: var(--terminal-color);
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--terminal-color);
+  letter-spacing: 1px;
+  position: relative;
+  text-shadow: var(--terminal-glow);
+}
+
+.section-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 30%;
+  height: 2px;
+  background-color: var(--text-color-bright);
+  box-shadow: var(--terminal-glow);
+}
+
+/* Grid de habilidades */
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
+/* Make skill nodes non-interactive */
+.skill-node {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background-color: rgba(0, 10, 15, 0.8);
+  padding: 1rem;
+  border-radius: 4px;
+  border-left: 3px solid var(--terminal-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.skill-node:hover {
+  background-color: rgba(0, 20, 25, 0.9);
+  border-left: 3px solid var(--text-color-bright);
+  transform: translateX(5px);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.3), inset 0 0 10px rgba(0, 0, 0, 0.6);
+}
+
+/* Icono de habilidad */
+.skill-icon {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border: 1px solid var(--terminal-color);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.3);
+  padding: 0.5rem;
+  position: relative;
+}
+
+.skill-icon .icon {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.7rem;
+  color: var(--terminal-color);
+  text-shadow: var(--terminal-glow);
+  font-style: normal;
+}
+
+/* Información de habilidad */
+.skill-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skill-name {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.8rem;
+  color: var(--text-color-bright);
+  text-shadow: var(--terminal-glow);
+}
+
+.skill-level-bar {
+  height: 8px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 204, 0.3);
+  position: relative;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.skill-level-fill {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: linear-gradient(90deg, var(--terminal-color) 70%, var(--text-color-bright) 100%);
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+  width: 0%; /* Inicial, se cambiará con JS */
+  border-radius: 3px;
+}
+
+/* Efecto de resplandor de habilidades */
+.skill-node::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.1), transparent);
+  transform: translateX(-100%);
+  animation: skill-shine-pro 6s ease-in-out infinite;
+  animation-delay: calc(var(--shine-delay, 0) * 0.75s);
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes skill-shine-pro {
+  0%, 100% { transform: translateX(-100%); opacity: 0; }
+  50% { transform: translateX(100%); opacity: 1; }
+}
+
+/* Tooltip para habilidades */
+.skill-node:hover::after {
+  content: attr(title) " - " attr(data-level) "%";
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.9);
+  color: var(--text-color-bright);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  border: 1px solid var(--terminal-color);
+  box-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+  z-index: 100;
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+}
+
+/* Animaciones para los nodos */
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Clase activa para nodos seleccionados */
+.skill-node.active {
+  background-color: rgba(0, 35, 30, 0.9);
+  border-left: 3px solid var(--text-color-bright);
+  box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+}
+
+.skill-node.active .skill-icon {
+  border-color: var(--text-color-bright);
+  box-shadow: 0 0 12px rgba(0, 255, 204, 0.6);
+}
+
+/* Media queries para responsividad del árbol de habilidades */
+@media (min-width: 768px) {
+  .skill-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+  
+  .skill-tree-container {
+    padding: 2.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .skill-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Contenedor para la animación de fondo binaria */
+.binary-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Estilo para cada dígito binario */
+.binary-digit {
+  position: absolute;
+  color: var(--terminal-color);
+  opacity: 0;
+  font-family: var(--font-terminal);
+  text-shadow: var(--terminal-glow);
+  user-select: none;
+  animation: binary-fade 3s ease-in-out forwards;
+}
+
+/* Animación para la aparición y desaparición de los dígitos */
+@keyframes binary-fade {
+  0% { opacity: 0; }
+  30% { opacity: 0.3; }
+  70% { opacity: 0.3; }
+  100% { opacity: 0; }
+}
+
+
+
+/* Estilos para la nueva ventana de aplicación en la pestaña "About Me" */
+
+/* Contenedor principal de la ventana */
+.os-window-container {
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Ventana del sistema operativo */
+.os-window {
+  width: 100%;
+  max-width: 1200px;
+  min-height: 600px;
+  background-color: var(--terminal-panel-bg);
+  border: 2px solid var(--terminal-color);
+  box-shadow: 0 0 20px rgba(0, 255, 204, 0.3), var(--terminal-glow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  animation: window-appear 0.5s ease-out;
+}
+
+@keyframes window-appear {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* Barra de título de la ventana */
+.os-window-header {
+  background: linear-gradient(90deg, var(--terminal-color) 0%, var(--text-color-bright) 100%);
+  color: var(--terminal-bg);
+  padding: 0.6rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--terminal-color);
+}
+
+.os-window-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.os-window-icon {
+  background-color: var(--terminal-bg);
+  border-radius: 2px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8rem;
+  padding: 2px;
+}
+
+/* Botones de control de ventana */
+.os-window-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.window-control {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--terminal-panel-bg);
+  border: 1px solid var(--terminal-bg);
+  color: var(--terminal-bg);
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  line-height: 1;
+  padding: 0;
+  border-radius: 2px;
+}
+
+.window-control:hover {
+  transform: scale(1.1);
+  background-color: var(--terminal-bg);
+  color: var(--terminal-color);
+}
+
+.window-control.close:hover {
+  background-color: rgba(255, 51, 85, 0.8);
+  color: white;
+  border-color: rgba(255, 51, 85, 0.8);
+}
+
+/* Cuerpo de la ventana con barra lateral */
+.os-window-body {
+  display: flex;
+  flex: 1;
+  min-height: 500px;
+  overflow: hidden;
+}
+
+/* Barra lateral */
+.os-window-sidebar {
+  width: 200px;
+  min-width: 200px;
+  background-color: rgba(0, 10, 15, 0.9);
+  border-right: 1px solid var(--terminal-color);
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--terminal-color);
+  font-size: 0.9rem;
+  border-left: 3px solid transparent;
+}
+
+.sidebar-item:hover {
+  background-color: rgba(0, 255, 204, 0.1);
+  border-left: 3px solid var(--terminal-color);
+}
+
+.sidebar-item.active {
+  background-color: rgba(0, 255, 204, 0.2);
+  border-left: 3px solid var(--text-color-bright);
+  color: var(--text-color-bright);
+}
+
+.sidebar-icon {
+  font-size: 1.2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+}
+
+/* Contenido principal de la ventana */
+.os-window-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  background-color: var(--terminal-bg);
+  position: relative;
+}
+
+.os-window-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%2300ffcc' fill-opacity='0.03'%3E%3Cpath d='M0 0h20L0 20z'/%3E%3C/g%3E%3C/svg%3E"),
+    radial-gradient(circle at center, rgba(0, 255, 204, 0.03) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Secciones dentro del contenido */
+.window-section {
+  display: none;
+  animation: section-fade-in 0.4s ease-out;
+  position: relative;
+  z-index: 1;
+}
+
+.window-section.active {
+  display: block;
+}
+
+@keyframes section-fade-in {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Barra de estado inferior */
+.os-window-statusbar {
+  height: 25px;
+  background-color: var(--terminal-panel-bg);
+  border-top: 1px solid var(--terminal-color);
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--terminal-color);
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.status-indicator.online {
+  color: var(--terminal-success, #00ff66);
+}
+
+/* Elementos para secciones de contenido */
+
+/* Títulos de sección */
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--terminal-color);
+}
+
+.section-title h2 {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 1.2rem;
+  color: var(--text-color-bright);
+  text-shadow: var(--terminal-glow);
+  margin: 0;
+}
+
+.title-icon {
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background-color: rgba(0, 255, 204, 0.1);
+  border-radius: 4px;
+  border: 1px solid var(--terminal-color);
+  box-shadow: var(--terminal-glow);
+}
+
+/* Tarjeta de información */
+.info-card {
+  background-color: rgba(0, 10, 15, 0.9);
+  border: 1px solid var(--terminal-color);
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--terminal-glow);
+}
+
+.info-header {
+  background-color: var(--terminal-color);
+  color: var(--terminal-bg);
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.info-content {
+  padding: 1rem;
+}
+
+.info-row {
+  display: flex;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px dashed rgba(0, 255, 204, 0.2);
+  padding-bottom: 0.5rem;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.info-label {
+  flex: 0 0 100px;
+  font-weight: bold;
+  color: var(--text-color-bright);
+}
+
+.info-value {
+  flex: 1;
+  color: var(--terminal-color);
+}
+
+/* Visualizador de texto */
+.text-display {
+  background-color: rgba(0, 10, 15, 0.7);
+  border: 1px solid var(--terminal-color);
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+.text-display p {
+  margin-bottom: 1rem;
+}
+
+.text-display p:last-child {
+  margin-bottom: 0;
+}
+
+.highlight {
+  color: var(--text-color-bright);
+  font-weight: bold;
+  text-shadow: var(--terminal-glow);
+}
+
+/* Etiquetas de habilidades */
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tag {
+  background-color: rgba(0, 255, 204, 0.1);
+  border: 1px solid var(--terminal-color);
+  border-radius: 4px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  color: var(--terminal-color);
+  box-shadow: var(--terminal-glow);
+  transition: all 0.2s;
+}
+
+.tag:hover {
+  background-color: var(--terminal-color);
+  color: var(--terminal-bg);
+  transform: translateY(-2px);
+}
+
+/* Línea de tiempo para historial */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: var(--terminal-color);
+  opacity: 0.5;
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -2rem;
+  top: 0.5rem;
+  width: 12px;
+  height: 12px;
+  background-color: var(--terminal-color);
+  border-radius: 50%;
+  box-shadow: var(--terminal-glow);
+}
+
+.timeline-date {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.8rem;
+  color: var(--text-color-bright);
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content {
+  background-color: rgba(0, 10, 15, 0.7);
+  border: 1px solid var(--terminal-color);
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.timeline-content h3 {
+  font-size: 1rem;
+  color: var(--terminal-color);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content p {
+  margin-bottom: 0.5rem;
+}
+
+.timeline-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* Cuadrícula de intereses */
+.interests-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.interest-card {
+  background-color: rgba(0, 10, 15, 0.8);
+  border: 1px solid var(--terminal-color);
+  border-radius: 4px;
+  padding: 1.2rem;
+  transition: all 0.3s;
+}
+
+.interest-card:hover {
+  background-color: rgba(0, 255, 204, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 255, 204, 0.2);
+}
+
+.interest-icon {
+  font-size: 1.8rem;
+  margin-bottom: 0.8rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 50%;
+  border: 1px solid var(--terminal-color);
+  box-shadow: var(--terminal-glow);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.interest-title {
+  font-family: 'Minecraft', 'Press Start 2P', var(--font-pixelated);
+  font-size: 0.9rem;
+  color: var(--text-color-bright);
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.interest-card p {
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* Media queries para responsive */
+@media (max-width: 900px) {
+  .os-window-body {
+    flex-direction: column;
+  }
+  
+  .os-window-sidebar {
+    width: 100%;
+    min-width: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--terminal-color);
+    padding: 0.5rem;
+    flex-direction: row;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+  
+  .sidebar-item {
+    padding: 0.6rem;
+    border-left: none;
+    flex-direction: column;
+    flex: 0 0 auto;
+    border-bottom: 3px solid transparent;
+    text-align: center;
+  }
+  
+  .sidebar-item:hover, 
+  .sidebar-item.active {
+    border-left: none;
+    border-bottom: 3px solid var(--terminal-color);
+  }
+  
+  .sidebar-item.active {
+    border-bottom-color: var(--text-color-bright);
+  }
+  
+  .sidebar-item span {
+    font-size: 0.7rem;
+  }
+  
+  .interests-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .os-window-header {
+    padding: 0.4rem 0.8rem;
+  }
+  
+  .os-window-title {
+    font-size: 0.8rem;
+  }
+  
+  .os-window-content {
+    padding: 1rem;
+  }
+  
+  .section-title h2 {
+    font-size: 1rem;
+  }
+  
+  .title-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+  }
+  
+  .timeline {
+    padding-left: 1.5rem;
+  }
+  
+  .timeline-item::before {
+    left: -1.5rem;
+  }
+  
+  .interests-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .info-row {
+    flex-direction: column;
+  }
+  
+  .info-label {
+    flex: none;
+    margin-bottom: 0.3rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .os-window-container {
+    padding: 0.5rem;
+  }
+  
+  .sidebar-icon {
+    font-size: 1rem;
+    width: 20px;
+    height: 20px;
+  }
+}
+

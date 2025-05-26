@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Terminal interactiva estilo CRT retro de EchaiDev" />
+  <title>Terminal | EchaiDev</title>
+  <!-- Estilos CSS -->
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="home-styles.css">
+  <!-- Scripts externos -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ua-parser-js/0.7.28/ua-parser.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.cdnfonts.com">
+</head>
+<body class="crt">
+  <div class="scanline"></div>
+  <div class="noise"></div>
+  <div class="flicker"></div>
+  <header>
+    <div class="logo">EchaiDev://home</div>
+    <div class="hamburger-menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">/home</a>
+      <a href="about.html" class="nav-link">/about</a>
+      <a href="/projects.html" class="nav-link">/projects</a>
+      <a href="/blog.html" class="nav-link">/blog</a>
+      <a href="/contact.html" class="nav-link">/contact</a>
+    </nav>
+  </header>
+  
+  <!-- Menú móvil -->
+  <div class="mobile-menu">
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">/home</a>
+      <a href="/about.html" class="nav-link">/about</a>
+      <a href="/projects.html" class="nav-link">/projects</a>
+      <a href="/blog.html" class="nav-link">/blog</a>
+      <a href="/contact.html" class="nav-link">/contact</a>
+    </nav>
+  </div>
+  
+  <main id="SO">
+    <!-- Contenedor del OS visible directamente sin pantalla de carga -->
+    <div class="os-container" id="osContainer">
+      <div class="os-title-bar">
+        <div id="welcome-message">EchaiDev Terminal OS v1.0.0</div>
+        <div class="os-clock" id="osClock">00:00:00</div>
+      </div>
+      <div class="os-desktop">
+        <a href="index.html" class="desktop-icon active-app">
+          <div class="icon-graphic">⌂</div>
+          <div class="icon-label">/home</div>
+        </a>
+        <a href="about.html" class="desktop-icon">
+          <div class="icon-graphic">👤</div>
+          <div class="icon-label">/about</div>
+        </a>
+        <a href="/projects.html" class="desktop-icon">
+          <div class="icon-graphic">📁</div>
+          <div class="icon-label">/projects</div>
+        </a>
+        <a href="/blog.html" class="desktop-icon">
+          <div class="icon-graphic">📝</div>
+          <div class="icon-label">/blog</div>
+        </a>
+        <a href="/contact.html" class="desktop-icon">
+          <div class="icon-graphic">✉</div>
+          <div class="icon-label">/contact</div>
+        </a>
+        <a href="#" class="desktop-icon" id="terminalApp">
+          <div class="icon-graphic">></div>
+          <div class="icon-label">Terminal</div>
+        </a>
+        <a href="#" class="desktop-icon" id="gamesApp">
+          <div class="icon-graphic">🎮</div>
+          <div class="icon-label">Games</div>
+        </a>
+        <a href="#" class="desktop-icon" id="settingsApp">
+          <div class="icon-graphic">⚙</div>
+          <div class="icon-label">Settings</div>
+        </a>
+      </div>
+    </div>
+  </main>
+<footer>
+  <div class="footer-inner">
+    <p>© 2025 echaidev | Terminal</p>
+    <div class="social-links">
+      <a href="https://github.com/echaidev" class="social-link" aria-label="Enlace a GitHub">
+        <i class="fab fa-github"></i>
+      </a>
+      <a href="https://twitter.com/echaidev" class="social-link" aria-label="Enlace a Twitter">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="mailto:contacto@echaidev.com" class="social-link" aria-label="Enviar correo">
+        <i class="fas fa-envelope"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+  
+  <!-- JavaScript -->
+  <script src="transition.js"></script>
+  <script src="main.js"></script>
+  <script src="home.js"></script>
+</body>
+</html>
