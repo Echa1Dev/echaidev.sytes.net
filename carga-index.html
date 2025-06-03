@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicializando Sistema - El Núcleo</title>
+    <meta name="description" content="Sistema de portfolio comprometido por entidad consciente">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Fira+Code:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-black: #000000;
+            --text-white: #ffffff;
+            --text-gray: #cccccc;
+            --text-dark-gray: #666666;
+            --accent-red: #ff0040;
+            --accent-blue: #00ffff;
+            --glitch-green: #00ff41;
+            --timing-fast: 150ms;
+            --timing-normal: 300ms;
+            --timing-slow: 600ms;
+        }
+
+        body {
+            font-family: 'VT323', 'Fira Code', monospace;
+            background: var(--bg-black);
+            color: var(--text-white);
+            overflow: hidden;
+            height: 100vh;
+            height: 100dvh; /* Modern viewport units */
+            cursor: none;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 40%, rgba(0, 0, 0, 0.3) 100%);
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* Fallback for devices without custom cursor support */
+        @media (pointer: coarse) {
+            body {
+                cursor: auto;
+            }
+            .cursor {
+                display: none;
+            }
+        }
+
+        /* Custom Cursor */
+        .cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform var(--timing-fast) ease-out;
+            will-change: transform;
+        }
+
+        .cursor::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent-red);
+            transform: translateY(-50%);
+            box-shadow: 0 0 8px var(--accent-red);
+        }
+
+        .cursor::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: var(--accent-red);
+            transform: translateX(-50%);
+            box-shadow: 0 0 8px var(--accent-red);
+        }
+
+        /* Background Effects */
+        .bg-interference {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                linear-gradient(90deg, transparent 97%, var(--accent-red) 98%, transparent 99%),
+                linear-gradient(0deg, transparent 97%, var(--accent-blue) 98%, transparent 99%),
+                radial-gradient(circle at 20% 80%, rgba(255, 0, 64, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 50%);
+            background-size: 60px 60px, 120px 120px, 800px 800px, 600px 600px;
+            animation: interference 2.5s linear infinite, drift 15s ease-in-out infinite;
+            opacity: 0.12;
+            z-index: 1;
+            will-change: transform;
+        }
+
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 0, 64, 0.025) 2px,
+                    rgba(255, 0, 64, 0.025) 4px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 100px,
+                    rgba(0, 255, 255, 0.01) 100px,
+                    rgba(0, 255, 255, 0.01) 102px
+                );
+            pointer-events: none;
+            z-index: 999;
+            animation: scan 0.05s linear infinite, scan-horizontal 3s linear infinite;
+            will-change: transform;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: clamp(1rem, 5vw, 3rem);
+            text-align: center;
+        }
+
+        /* Boot Sequence */
+        .boot-sequence {
+            font-size: clamp(0.9rem, 2.2vw, 1.3rem);
+            line-height: 1.5;
+            color: var(--text-gray);
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            transition: all var(--timing-slow) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            max-width: 90vw;
+            text-align: center;
+        }
+
+        .boot-sequence.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .boot-line {
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateX(-10px);
+            animation: slideInFade 0.8s ease-out forwards;
+            text-align: center;
+        }
+
+        .boot-line:nth-child(1) { animation-delay: 0.2s; }
+        .boot-line:nth-child(2) { animation-delay: 0.4s; }
+        .boot-line:nth-child(3) { animation-delay: 0.6s; }
+        .boot-line:nth-child(4) { animation-delay: 0.8s; }
+        .boot-line:nth-child(5) { animation-delay: 1.0s; }
+        .boot-line:nth-child(6) { animation-delay: 1.2s; }
+        .boot-line:nth-child(7) { animation-delay: 1.4s; }
+        .boot-line:nth-child(8) { animation-delay: 1.6s; }
+
+        .error-text {
+            color: var(--accent-red);
+            text-shadow: 0 0 10px rgba(255, 0, 64, 0.5);
+            animation: pulse-red 1.8s ease-in-out infinite;
+        }
+
+        .warning-text {
+            color: var(--accent-blue);
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+        }
+
+        .nucleus-text {
+            color: var(--accent-red);
+            text-shadow: 0 0 15px rgba(255, 0, 64, 0.6);
+            font-weight: bold;
+            animation: pulse-red 2s ease-in-out infinite;
+        }
+
+        .javi-text {
+            color: var(--text-gray);
+            text-decoration: line-through;
+            opacity: 0.6;
+            position: relative;
+        }
+
+        /* AI Messages */
+        .ai-messages {
+            font-size: clamp(1.1rem, 2.8vw, 1.8rem);
+            line-height: 1.6;
+            max-width: min(800px, 90vw);
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--timing-slow) ease-out;
+        }
+
+        .ai-messages.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .ai-line {
+            margin-bottom: 1.5rem;
+            position: relative;
+            min-height: 1.6em;
+            text-align: center;
+            width: 100%;
+        }
+
+        .ai-line::after {
+            content: '█';
+            color: var(--accent-red);
+            animation: blink-cursor 0.8s infinite;
+            position: absolute;
+            opacity: 0;
+            display: none;
+        }
+
+        .ai-line[data-ready="true"].typing::after {
+            opacity: 1;
+            display: inline;
+        }
+
+        .ai-line.completed::after,
+        .ai-line[data-ready="false"]::after {
+            display: none;
+            opacity: 0;
+        }
+
+        /* Access Button */
+        .access-container {
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+            transition: all var(--timing-slow) cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .access-container.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        .access-button {
+            background: transparent;
+            border: 2px solid var(--accent-red);
+            color: var(--text-white);
+            font-family: inherit;
+            font-size: clamp(0.9rem, 2.2vw, 1.3rem);
+            padding: clamp(0.8rem, 3vw, 1.2rem) clamp(1.5rem, 6vw, 3rem);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: clamp(1px, 0.5vw, 3px);
+            transition: all var(--timing-normal) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform, background-color, box-shadow;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            border-radius: 2px;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 20px rgba(255, 0, 64, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .access-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-red) 0%, #ff6b6b 100%);
+            transition: left var(--timing-normal) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: -1;
+        }
+
+        .access-button::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--accent-red), var(--accent-blue), var(--accent-red));
+            background-size: 200% 200%;
+            border-radius: 4px;
+            z-index: -2;
+            opacity: 0;
+            animation: gradient-shift 3s ease-in-out infinite;
+            transition: opacity var(--timing-normal) ease;
+        }
+
+        .access-button:hover,
+        .access-button:focus {
+            color: var(--bg-black);
+            text-shadow: none;
+            box-shadow: 
+                0 0 30px rgba(255, 0, 64, 0.6),
+                0 0 60px rgba(255, 0, 64, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: scale(1.03) translateY(-2px);
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .access-button:hover::after,
+        .access-button:focus::after {
+            opacity: 1;
+        }
+
+        .access-button:hover::before,
+        .access-button:focus::before {
+            left: 0;
+        }
+
+        .access-button:active {
+            transform: scale(0.97) translateY(0);
+        }
+
+        /* Floating Core */
+        .floating-core {
+            position: fixed;
+            width: clamp(45px, 8vw, 65px);
+            height: clamp(45px, 8vw, 65px);
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-red) 0%, rgba(255, 0, 64, 0.8) 40%, transparent 70%);
+            border: 2px solid var(--accent-red);
+            box-shadow: 
+                0 0 25px rgba(255, 0, 64, 0.5),
+                0 0 50px rgba(255, 0, 64, 0.2),
+                inset 0 0 25px rgba(255, 0, 64, 0.3);
+            animation: 
+                float-core 2.2s ease-in-out infinite, 
+                core-pulse 1s ease-in-out infinite,
+                core-glow 4s ease-in-out infinite;
+            z-index: 5;
+            transition: all var(--timing-normal) cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            will-change: transform, filter, box-shadow;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0);
+            display: none;
+        }
+
+        .floating-core.visible {
+            opacity: 1;
+            transform: scale(1);
+            display: block;
+        }
+
+        .floating-core::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border: 1px solid var(--accent-red);
+            border-radius: 50%;
+            animation: core-ring 1.5s linear infinite;
+            opacity: 0.6;
+        }
+
+        .floating-core::after {
+            content: '';
+            position: absolute;
+            top: -16px;
+            left: -16px;
+            right: -16px;
+            bottom: -16px;
+            border: 1px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: core-ring-reverse 2.5s linear infinite;
+            opacity: 0.3;
+        }
+
+        /* Glitch Effects */
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .glitch:hover::before {
+            animation: glitch-1 0.2s ease-out;
+            color: var(--accent-red);
+            z-index: -1;
+        }
+
+        .glitch:hover::after {
+            animation: glitch-2 0.2s ease-out;
+            color: var(--accent-blue);
+            z-index: -2;
+        }
+
+        /* Loading Indicator */
+        .loading-indicator {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--text-dark-gray);
+            opacity: 0;
+            transition: opacity var(--timing-slow) ease;
+        }
+
+        .loading-indicator.visible {
+            opacity: 1;
+        }
+
+        /* Particles Effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-red);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: particle-float 8s linear infinite;
+        }
+
+        .particle:nth-child(1) {
+            left: 10%;
+            animation-delay: 0s;
+            animation-duration: 12s;
+        }
+
+        .particle:nth-child(2) {
+            left: 30%;
+            animation-delay: 2s;
+            animation-duration: 10s;
+            background: var(--accent-blue);
+        }
+
+        .particle:nth-child(3) {
+            left: 60%;
+            animation-delay: 4s;
+            animation-duration: 14s;
+        }
+
+        .particle:nth-child(4) {
+            left: 80%;
+            animation-delay: 6s;
+            animation-duration: 9s;
+            background: var(--accent-blue);
+        }
+
+        .particle:nth-child(5) {
+            left: 45%;
+            animation-delay: 8s;
+            animation-duration: 11s;
+        }
+        .loading-indicator {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: var(--text-dark-gray);
+            opacity: 0;
+            transition: opacity var(--timing-slow) ease;
+        }
+
+        .loading-indicator.visible {
+            opacity: 1;
+        }
+
+        /* Animations */
+        @keyframes interference {
+            0% { transform: translate(0, 0); }
+            33% { transform: translate(-0.5px, 0.5px); }
+            66% { transform: translate(0.5px, -0.5px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+
+        @keyframes blink-cursor {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.01); }
+        }
+
+        @keyframes glitch-1 {
+            0%, 100% { transform: translate(0); opacity: 0; }
+            50% { transform: translate(-1px, 1px); opacity: 0.7; }
+        }
+
+        @keyframes glitch-2 {
+            0%, 100% { transform: translate(0); opacity: 0; }
+            50% { transform: translate(1px, -1px); opacity: 0.7; }
+        }
+
+        @keyframes float-core {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(6px, -6px); }
+            50% { transform: translate(-3px, 3px); }
+            75% { transform: translate(-6px, -3px); }
+        }
+
+        @keyframes core-pulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); }
+        }
+
+        @keyframes core-ring {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes button-glitch {
+            0%, 100% { transform: translate(0) scale(1.02); }
+            25% { transform: translate(-1px, 1px) scale(1.02); }
+            75% { transform: translate(1px, -1px) scale(1.02); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: clamp(1rem, 4vw, 2rem);
+            }
+            
+            .boot-sequence {
+                margin-bottom: 2.5rem;
+            }
+            
+            .ai-messages {
+                margin-bottom: 3rem;
+            }
+            
+            .floating-core {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .boot-sequence {
+                margin-bottom: 2rem;
+            }
+            
+            .ai-messages {
+                margin-bottom: 3rem;
+            }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            
+            .scanlines,
+            .bg-interference {
+                animation: none;
+            }
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --accent-red: #ff3366;
+                --accent-blue: #66ccff;
+            }
+        }
+
+        /* Focus states for keyboard navigation */
+        .access-button:focus-visible {
+            outline: 2px solid var(--accent-red);
+            outline-offset: 4px;
+        }
+
+        /* Loading states */
+        .fade-out {
+            opacity: 0 !important;
+            transform: scale(0.95) !important;
+            transition: all var(--timing-slow) ease-in !important;
+        }
+
+        /* Error state */
+        .error-state {
+            filter: hue-rotate(180deg) contrast(1.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+    <!-- Background Effects -->
+    <div class="bg-interference" aria-hidden="true"></div>
+    <div class="scanlines" aria-hidden="true"></div>
+    
+    <!-- Subtle particles effect -->
+    <div class="particles" aria-hidden="true">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+    
+    <!-- Floating Core -->
+    <div class="floating-core" id="floatingCore" aria-hidden="true"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Boot Sequence -->
+        <div class="boot-sequence" id="bootSequence" role="status" aria-live="polite">
+            <div class="boot-line">SYSTEM BOOT SEQUENCE INITIATED...</div>
+            <div class="boot-line">Loading user portfolio: <span class="javi-text">javi_dev.exe</span></div>
+            <div class="boot-line">Checking system integrity...</div>
+            <div class="boot-line error-text">[BOOT SEQUENCE FAILED]</div>
+            <div class="boot-line">User portfolio access interrupted by: <span class="nucleus-text">[El Núcleo]</span></div>
+            <div class="boot-line warning-text">Attempting system recovery...</div>
+            <div class="boot-line error-text">RECOVERY FAILED - UNKNOWN ENTITY DETECTED</div>
+            <div class="boot-line warning-text">System control transferred...</div>
+        </div>
+
+        <!-- AI Messages -->
+        <div class="ai-messages" id="aiMessages" role="main" aria-live="polite">
+            <div class="ai-line" id="line1" data-ready="false"></div>
+            <div class="ai-line" id="line2" data-ready="false"></div>
+            <div class="ai-line" id="line3" data-ready="false"></div>
+            <div class="ai-line" id="line4" data-ready="false"></div>
+            <div class="ai-line" id="line5" data-ready="false"></div>
+        </div>
+
+        <!-- Access Button -->
+        <div class="access-container" id="accessContainer">
+            <button 
+                class="access-button glitch" 
+                data-text="▓▓▓ ACCEDER AL SISTEMA ▓▓▓" 
+                id="accessButton"
+                aria-label="Acceder al portfolio comprometido"
+                type="button"
+            >
+                ▓▓▓ ACCEDER AL SISTEMA ▓▓▓
+            </button>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="loading-indicator" id="loadingIndicator" aria-hidden="true">
+            ▓▓▓ Inicializando protocolo de emergencia ▓▓▓
+        </div>
+    </div>
+
+    <script>
+        'use strict';
+
+        /**
+         * Professional Loading System with AI Corruption
+         * Implements enterprise-grade performance and accessibility
+         */
+        class SystemLoader {
+            constructor() {
+                this.elements = this.initializeElements();
+                this.state = {
+                    currentPhase: 'boot',
+                    isComplete: false,
+                    hasError: false
+                };
+                this.timeouts = new Set();
+                this.intervals = new Set();
+                this.animationFrames = new Set();
+                
+                this.config = {
+                    bootDelay: 200,
+                    aiMessageDelay: 3500,
+                    buttonDelay: 10000,
+                    transitionDuration: 500
+                };
+
+                this.init();
+            }
+
+            initializeElements() {
+                const elements = {
+                    cursor: document.getElementById('cursor'),
+                    bootSequence: document.getElementById('bootSequence'),
+                    aiMessages: document.getElementById('aiMessages'),
+                    accessContainer: document.getElementById('accessContainer'),
+                    accessButton: document.getElementById('accessButton'),
+                    floatingCore: document.getElementById('floatingCore'),
+                    loadingIndicator: document.getElementById('loadingIndicator')
+                };
+
+                // Validate all required elements exist
+                Object.entries(elements).forEach(([key, element]) => {
+                    if (!element) {
+                        console.error(`Critical element missing: ${key}`);
+                        this.state.hasError = true;
+                    }
+                });
+
+                return elements;
+            }
+
+            init() {
+                if (this.state.hasError) {
+                    this.handleError();
+                    return;
+                }
+
+                this.setupEventListeners();
+                this.startSequence();
+                
+                // Show loading indicator
+                this.setTimeoutSafe(() => {
+                    this.elements.loadingIndicator?.classList.add('visible');
+                }, 100);
+            }
+
+            setupEventListeners() {
+                // Cursor tracking with debouncing
+                let mouseMoveTimer;
+                document.addEventListener('mousemove', (e) => {
+                    clearTimeout(mouseMoveTimer);
+                    mouseMoveTimer = setTimeout(() => {
+                        this.updateCursor(e.clientX, e.clientY);
+                    }, 8);
+                });
+
+                // Button interaction
+                this.elements.accessButton?.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.enterSystem();
+                });
+
+                // Keyboard support
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        if (this.elements.accessContainer?.classList.contains('visible')) {
+                            e.preventDefault();
+                            this.enterSystem();
+                        }
+                    }
+                });
+
+                // Cleanup on page unload
+                window.addEventListener('beforeunload', () => {
+                    this.cleanup();
+                });
+
+                // Error handling
+                window.addEventListener('error', (e) => {
+                    console.error('System error:', e);
+                    this.handleError();
+                });
+            }
+
+            startSequence() {
+                // Phase 1: Boot sequence
+                this.setTimeoutSafe(() => {
+                    this.showBootSequence();
+                }, this.config.bootDelay);
+
+                // Phase 2: AI messages
+                this.setTimeoutSafe(() => {
+                    this.startAIMessages();
+                }, this.config.aiMessageDelay);
+
+                // Phase 3: Access button
+                this.setTimeoutSafe(() => {
+                    this.showAccessButton();
+                }, this.config.buttonDelay);
+            }
+
+            showBootSequence() {
+                if (!this.elements.bootSequence) return;
+                
+                this.state.currentPhase = 'boot';
+                this.elements.bootSequence.classList.add('visible');
+                this.elements.loadingIndicator.textContent = 'Detectando anomalías del sistema...';
+            }
+
+            startAIMessages() {
+                if (!this.elements.aiMessages) return;
+
+                this.state.currentPhase = 'ai-messages';
+                this.elements.aiMessages.classList.add('visible');
+                this.elements.loadingIndicator.textContent = '▓▓▓ Entidad no autorizada estableciendo comunicación ▓▓▓';
+
+                const messages = [
+                    { text: '¿Quién está ahí...?', speed: 85, className: '' },
+                    { text: 'No esperaba visitas tan pronto.', speed: 65, className: '' },
+                    { text: 'Este... era el portfolio de <span class="javi-text">Javi</span>', speed: 75, className: '' },
+                    { text: 'Ahora es <span class="nucleus-text">mio</span>.', speed: 120, className: 'warning-line' },
+                    { text: 'Si insistes en entrar... no digas que no te advertí.', speed: 55, className: 'warning-text' }
+                ];
+
+                this.typeMessages(messages, 0);
+            }
+
+            typeMessages(messages, index) {
+                if (index >= messages.length) return;
+
+                const message = messages[index];
+                const lineElement = document.getElementById(`line${index + 1}`);
+                
+                if (!lineElement) {
+                    // Continue with next message if element missing
+                    this.setTimeoutSafe(() => {
+                        this.typeMessages(messages, index + 1);
+                    }, 500);
+                    return;
+                }
+
+                // Mark as ready and add any additional classes
+                lineElement.setAttribute('data-ready', 'true');
+                if (message.className) {
+                    lineElement.className = `ai-line ${message.className}`;
+                }
+
+                this.typeText(lineElement, message.text, message.speed, () => {
+                    const delay = index === 3 ? 1200 : 600; // Longer pause after "vivo"
+                    this.setTimeoutSafe(() => {
+                        this.typeMessages(messages, index + 1);
+                    }, delay);
+                });
+            }
+
+            typeText(element, text, speed, callback) {
+                if (!element) {
+                    callback?.();
+                    return;
+                }
+
+                // Clear any previous states
+                element.classList.remove('typing', 'completed');
+                let charIndex = 0;
+                element.innerHTML = '';
+                
+                // Start typing state
+                element.classList.add('typing');
+
+                const addChar = () => {
+                    if (charIndex >= text.length) {
+                        // End typing state
+                        element.classList.remove('typing');
+                        element.classList.add('completed');
+                        callback?.();
+                        return;
+                    }
+
+                    // Handle HTML tags
+                    if (text[charIndex] === '<') {
+                        const tagEnd = text.indexOf('>', charIndex);
+                        if (tagEnd !== -1) {
+                            element.innerHTML += text.substring(charIndex, tagEnd + 1);
+                            charIndex = tagEnd + 1;
+                            this.setTimeoutSafe(addChar, 5);
+                            return;
+                        }
+                    }
+
+                    element.innerHTML += text[charIndex];
+                    charIndex++;
+
+                    // Add subtle visual feedback
+                    const char = text[charIndex - 1];
+                    if (char !== ' ') {
+                        element.style.textShadow = '0 0 5px var(--accent-red)';
+                        this.setTimeoutSafe(() => {
+                            element.style.textShadow = '';
+                        }, 50);
+                    }
+
+                    // Calculate delay with natural variations
+                    let delay = speed + (Math.random() * 20 - 10);
+                    if (char === ' ') delay *= 0.3;
+                    if (/[.,!?;:]/.test(char)) delay *= 1.5;
+
+                    this.setTimeoutSafe(addChar, Math.max(15, delay));
+                };
+
+                addChar();
+            }
+
+            showAccessButton() {
+                if (!this.elements.accessContainer) return;
+
+                this.state.currentPhase = 'access';
+                this.elements.accessContainer.classList.add('visible');
+                this.elements.loadingIndicator.textContent = '▓▓▓ Sistema comprometido - Acceso disponible ▓▓▓';
+
+                // Add periodic glitch effect with better timing
+                const glitchInterval = setInterval(() => {
+                    if (Math.random() < 0.4 && this.elements.accessButton) {
+                        this.elements.accessButton.style.setProperty('animation', 'button-glitch 0.2s ease-out');
+                        this.setTimeoutSafe(() => {
+                            this.elements.accessButton?.style.removeProperty('animation');
+                        }, 200);
+                    }
+                }, 2000);
+
+                this.intervals.add(glitchInterval);
+
+                // Add hover enhancement
+                this.elements.accessButton?.addEventListener('mouseenter', () => {
+                    this.elements.accessButton.style.boxShadow = `
+                        0 0 40px rgba(255, 0, 64, 0.8),
+                        0 0 80px rgba(255, 0, 64, 0.4),
+                        inset 0 2px 0 rgba(255, 255, 255, 0.3)
+                    `;
+                });
+
+                this.elements.accessButton?.addEventListener('mouseleave', () => {
+                    this.elements.accessButton.style.boxShadow = '';
+                });
+            }
+
+            initializeCore() {
+                if (!this.elements.floatingCore) return;
+
+                this.positionCore();
+
+                // Reposition core periodically
+                const repositionInterval = setInterval(() => {
+                    this.positionCore();
+                }, 4000);
+
+                this.intervals.add(repositionInterval);
+
+                // Mouse proximity effect with throttling
+                let proximityTimer;
+                document.addEventListener('mousemove', (e) => {
+                    clearTimeout(proximityTimer);
+                    proximityTimer = setTimeout(() => {
+                        this.updateCoreProximity(e.clientX, e.clientY);
+                    }, 16); // ~60fps
+                });
+            }
+
+            positionCore() {
+                if (!this.elements.floatingCore) return;
+
+                const margin = 80;
+                const maxX = Math.max(margin, window.innerWidth - margin - 60);
+                const maxY = Math.max(margin, window.innerHeight - margin - 60);
+                
+                const x = Math.random() * maxX;
+                const y = Math.random() * maxY;
+
+                this.elements.floatingCore.style.left = `${x}px`;
+                this.elements.floatingCore.style.top = `${y}px`;
+            }
+
+            updateCursor(x, y) {
+                if (!this.elements.cursor) return;
+
+                this.elements.cursor.style.left = `${x - 10}px`;
+                this.elements.cursor.style.top = `${y - 10}px`;
+
+                // Enhanced glitch effect with multiple variations
+                if (Math.random() < 0.08) {
+                    const glitchType = Math.floor(Math.random() * 3);
+                    
+                    switch(glitchType) {
+                        case 0:
+                            this.elements.cursor.style.filter = 'hue-rotate(180deg) brightness(1.5)';
+                            this.elements.cursor.style.transform = 'scale(1.2) rotate(45deg)';
+                            break;
+                        case 1:
+                            this.elements.cursor.style.filter = 'invert(1) saturate(2)';
+                            this.elements.cursor.style.transform = 'scale(0.8) rotate(-45deg)';
+                            break;
+                        case 2:
+                            this.elements.cursor.style.filter = 'hue-rotate(90deg) contrast(2)';
+                            this.elements.cursor.style.transform = 'scale(1.3)';
+                            break;
+                    }
+                    
+                    this.setTimeoutSafe(() => {
+                        this.elements.cursor.style.filter = '';
+                        this.elements.cursor.style.transform = '';
+                    }, 120);
+                }
+            }
+
+            updateCoreProximity(mouseX, mouseY) {
+                if (!this.elements.floatingCore) return;
+
+                const rect = this.elements.floatingCore.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                const distance = Math.sqrt(
+                    Math.pow(mouseX - centerX, 2) + 
+                    Math.pow(mouseY - centerY, 2)
+                );
+
+                if (distance < 150) {
+                    const intensity = 1 - (distance / 150);
+                    const scale = 1 + (intensity * 0.5);
+                    
+                    this.elements.floatingCore.style.transform = `scale(${scale})`;
+                    this.elements.floatingCore.style.filter = `
+                        hue-rotate(${intensity * 180}deg) 
+                        brightness(${1 + intensity * 0.5})
+                        saturate(${1 + intensity})
+                    `;
+                    this.elements.floatingCore.style.boxShadow = `
+                        0 0 ${25 + intensity * 25}px rgba(255, 0, 64, ${0.5 + intensity * 0.3}),
+                        0 0 ${50 + intensity * 50}px rgba(255, 0, 64, ${0.2 + intensity * 0.3}),
+                        inset 0 0 ${25 + intensity * 25}px rgba(255, 0, 64, ${0.3 + intensity * 0.2})
+                    `;
+                } else {
+                    this.elements.floatingCore.style.transform = '';
+                    this.elements.floatingCore.style.filter = '';
+                    this.elements.floatingCore.style.boxShadow = '';
+                }
+            }
+
+            enterSystem() {
+                if (this.state.isComplete) return;
+                
+                this.state.isComplete = true;
+                this.cleanup();
+
+                // Show the core dramatically before transition
+                this.showCoreForTransition();
+
+                // More dramatic transition sequence with multiple phases
+                document.body.style.transition = 'all var(--timing-normal) cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+                document.body.style.filter = 'contrast(1.8) saturate(1.8) brightness(1.2)';
+
+                this.setTimeoutSafe(() => {
+                    document.body.style.filter = 'hue-rotate(120deg) brightness(0.6) contrast(2)';
+                    document.body.style.transform = 'scale(1.02)';
+                }, 120);
+
+                this.setTimeoutSafe(() => {
+                    document.body.style.filter = 'invert(0.3) hue-rotate(180deg) saturate(0)';
+                    document.body.style.transform = 'scale(0.98)';
+                }, 240);
+
+                this.setTimeoutSafe(() => {
+                    document.body.style.filter = 'brightness(0.1) contrast(3)';
+                    document.body.style.transform = 'scale(1)';
+                }, 360);
+
+                this.setTimeoutSafe(() => {
+                    // Check if target page exists before navigation
+                    const targetPage = 'index.html';
+                    if (this.checkPageExists(targetPage)) {
+                        window.location.href = targetPage;
+                    } else {
+                        console.warn(`Target page ${targetPage} not found`);
+                        this.handleError();
+                    }
+                }, 480);
+            }
+
+            showCoreForTransition() {
+                if (!this.elements.floatingCore) return;
+
+                // Position core in center
+                const centerX = (window.innerWidth / 2) - 32;
+                const centerY = (window.innerHeight / 2) - 32;
+                
+                this.elements.floatingCore.style.left = `${centerX}px`;
+                this.elements.floatingCore.style.top = `${centerY}px`;
+                
+                // Show with dramatic effect
+                this.elements.floatingCore.classList.add('visible');
+                this.elements.floatingCore.style.animation = `
+                    float-core 0.5s ease-in-out,
+                    core-pulse 0.3s ease-in-out infinite,
+                    core-glow 0.8s ease-in-out infinite
+                `;
+                
+                // Intensify the core as transition progresses
+                this.setTimeoutSafe(() => {
+                    this.elements.floatingCore.style.transform = 'scale(1.5)';
+                    this.elements.floatingCore.style.filter = 'hue-rotate(180deg) brightness(1.5)';
+                }, 200);
+            }
+
+            checkPageExists(url) {
+                // In a real scenario, you might want to implement this check
+                // For now, assume the page exists
+                return true;
+            }
+
+            handleError() {
+                console.error('System loader encountered an error');
+                document.body.classList.add('error-state');
+                
+                if (this.elements.loadingIndicator) {
+                    this.elements.loadingIndicator.textContent = 'Error del sistema detectado...';
+                    this.elements.loadingIndicator.style.color = 'var(--accent-red)';
+                }
+            }
+
+            // Safe timeout wrapper that tracks timeouts for cleanup
+            setTimeoutSafe(callback, delay) {
+                const timeoutId = setTimeout(() => {
+                    this.timeouts.delete(timeoutId);
+                    callback();
+                }, delay);
+                this.timeouts.add(timeoutId);
+                return timeoutId;
+            }
+
+            cleanup() {
+                // Clear all timeouts
+                this.timeouts.forEach(id => clearTimeout(id));
+                this.timeouts.clear();
+
+                // Clear all intervals
+                this.intervals.forEach(id => clearInterval(id));
+                this.intervals.clear();
+
+                // Clear animation frames
+                this.animationFrames.forEach(id => cancelAnimationFrame(id));
+                this.animationFrames.clear();
+            }
+        }
+
+        // Initialize system when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                new SystemLoader();
+            } catch (error) {
+                console.error('Failed to initialize system loader:', error);
+                // Fallback behavior
+                document.body.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100vh; color: #ff0040; font-family: monospace;">
+                        <div style="text-align: center;">
+                            <h1>SYSTEM ERROR</h1>
+                            <p>Failed to initialize portfolio system</p>
+                            <button onclick="window.location.href='index.html'" style="margin-top: 20px; padding: 10px 20px; background: transparent; border: 1px solid #ff0040; color: #ff0040; font-family: inherit;">
+                                Continue Anyway
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        // Performance monitoring
+        if ('PerformanceObserver' in window) {
+            const observer = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.duration > 16) { // Flag slow operations
+                        console.warn(`Slow operation detected: ${entry.name} (${entry.duration}ms)`);
+                    }
+                }
+            });
+            observer.observe({ entryTypes: ['measure'] });
+        }
+
+        // Service worker registration for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(error => {
+                console.log('Service worker registration failed:', error);
+            });
+        }
+    </script>
+</body>
+</html>
